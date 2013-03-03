@@ -1,0 +1,66 @@
+<html>
+    <head>
+        <title>menu-aim jQuery plugin</title>
+
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type="text/javascript" src="jquery.menu-aim.js"></script>
+
+        <style>
+            ul {
+                position: absolute;
+                top: 20px;
+                left: 20px;
+                height: 400px;
+                width: 200px;
+                border: 1px solid black;
+                background: silver;
+                padding: 0;
+                margin: 0;
+            }
+
+            li {
+                display: block;
+                width: 100%;
+                padding: 5px;
+            }
+        </style>
+
+        <script>
+
+            $(function() {
+                $("#menu").menuAim({
+                    rowSelector: "li",
+                    enter: function(row) {
+                        $(row).css("text-decoration", "underline");
+                    },
+                    exit: function(row) {
+                        $(row).css("text-decoration", "none");
+                    },
+                    activate: function(row) {
+                        console.log("ACTIVATE", row);
+                        $(row).css("background-color", "blue");
+                    },
+                    deactivate: function(row) {
+                        console.log("DEACTIVATE", row);
+                        $(row).css("background-color", "");
+                    }
+                });
+            });
+        
+        </script>
+    </head>
+    <body>
+        <ul id="menu">
+            <li>Monkeys</li>
+            <li>Gorillas</li>
+            <li>Chimpanzees</li>
+            <li>Giraffes</li>
+            <li>Octopodes</li>
+            <li>Shrimp</li>
+            <li>Cheetah</li>
+            <li>Porpoise</li>
+            <li>Dolphin</li>
+            <li>Fleetwood</li>
+        </ul>
+    </body>
+</html>
