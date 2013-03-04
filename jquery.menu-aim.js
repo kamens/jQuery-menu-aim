@@ -25,15 +25,49 @@
  * experience is hopefully similar to amazon.com/'s "Shop by Department"
  * dropdown.
  *
- * https://github.com/kamens/jQuery-menu-aim
+ * Use like so:
  *
- * STOPSHIP(kamens): x-browser
- * STOPSHIP(kamens): can we remove hoverintent/hoverflow?
+ *      $("#menu").menuAim({
+ *          activate: $.noop,  // fired on row activation
+ *          deactivate: $.noop,  // fired on row deactivation
+ *      });
+ *
+ *  ...to receive events when a menu's row has been purposefully (de)activated.
+ *
+ * The following options can be passed to menuAim. All functions execute with
+ * the relevant row's HTML element as the execution context ('this'):
+ *
+ *      .menuAim({
+ *          // Function to call when a row is purposefully activated. Use this
+ *          // to show a submenu's content for the activated row.
+ *          activate: function() {},
+ *
+ *          // Function to call when a row is deactivated.
+ *          deactivate: function() {},
+ *
+ *          // Function to call when mouse enters a menu row. Entering a row
+ *          // does not mean the row has been activated, as the user may be
+ *          // mousing over to a submenu.
+ *          enter: function() {},
+ *
+ *          // Function to call when mouse exits a menu row.
+ *          exit: function() {},
+ *
+ *          // Selector for identifying which elements in the menu are rows
+ *          // that can trigger the above events. Defaults to "> li".
+ *          rowSelector: "> li",
+ *
+ *          // You may have some menu rows that aren't submenus and therefore
+ *          // shouldn't ever need to "activate." If so, filter submenu rows w/
+ *          // this selector. Defaults to "*" (all elements).
+ *          submenuSelector: "*"
+ *      });
+ *
+ * https://github.com/kamens/jQuery-menu-aim
 */
 (function($) {
 	$.fn.menuAim = function(opts) {
 
-        // STOPSHIP
         var $menu = $(this),
             activeRow = null,
             mouseLocs = [],
@@ -42,40 +76,42 @@
             options = $.extend({
                 rowSelector: "> li",
                 submenuSelector: "*",
-                tolerance: 75,  // STOPSHIP
+                tolerance: 75,  // bigger = more forgivey when entering submenu
                 enter: $.noop,
                 exit: $.noop,
                 activate: $.noop,
                 deactivate: $.noop
             }, opts);
 
-        var MOUSE_LOCS_TRACKED = 3,  // STOPSHIP
-            DELAY = 300;  // STOPSHIP
+        var MOUSE_LOCS_TRACKED = 3,  // number of past mouse locations to track
+            DELAY = 300;  // ms delay when user appears to be entering submenu
 
         /**
-         * STOPSHIP
+         * Keep track of the last few locations of the mouse.
          */
-        var mousemove = function(e) {
+        var mousemoveDocument = function(e) {
                 mouseLocs.push({x: e.pageX, y: e.pageY});
 
                 if (mouseLocs.length > MOUSE_LOCS_TRACKED) {
-                    // STOPSHIP
                     mouseLocs.shift();
                 }
-            },
-            mouseenter = function() {
-            },
-            mouseleave = function() {
+            };
+
+        /**
+         * Cancel possible row activations when leaving the menu entirely
+         */
+        var mouseleaveMenu = function() {
                 if (timeoutId) {
                     clearTimeout(timeoutId);
                 }
             };
 
         /**
-         * STOPSHIP
+         * Trigger a possible row activation whenever entering a new row.
          */
         var mouseenterRow = function() {
                 if (timeoutId) {
+                    // Cancel any previous activation delays
                     clearTimeout(timeoutId);
                 }
 
@@ -87,7 +123,7 @@
             };
 
         /**
-         * STOPSHIP
+         * Activate a menu row.
          */
         var activate = function(row) {
                 if (row == activeRow) {
@@ -100,8 +136,14 @@
 
                 options.activate(row);
                 activeRow = row;
-            },
-            possiblyActivate = function(row) {
+            };
+
+        /**
+         * Possibly activate a menu row. If mouse movement indicates that we
+         * shouldn't activate yet because user may be trying to enter
+         * a submenu's content, then delay and check again later.
+         */
+        var possiblyActivate = function(row) {
                 var delay = activationDelay();
 
                 if (delay) {
@@ -111,10 +153,20 @@
                 } else {
                     activate(row);
                 }
-            },
-            activationDelay = function() {
+            };
+
+        /**
+         * Return the amount of time that should be used as a delay before the
+         * currently hovered row is activated.
+         *
+         * Returns 0 if the activation should happen immediately. Otherwise,
+         * returns the number of milliseconds that should be delayed before
+         * checking again to see if the row should be activated.
+         */
+        var activationDelay = function() {
                 if (!activeRow || !$(activeRow).is(options.submenuSelector)) {
-                    // STOPSHIP
+                    // If there is no other submenu row already active, then
+                    // go ahead and activate immediately.
                     return 0;
                 }
 
@@ -131,28 +183,41 @@
                     prevLoc = mouseLocs[0];
 
                 if (!loc) {
-                    // STOPSHIP
                     return 0;
                 }
 
                 if (!prevLoc) {
-                    // STOPSHIP
                     prevLoc = loc;
                 }
 
                 if (prevLoc.x < offset.left || prevLoc.x > lowerRight.x ||
                     prevLoc.y < offset.top || prevLoc.y > lowerRight.y) {
-                    // STOPSHIP
+                    // If the previous mouse location was outside of the entir
+                    // menu's bounds, immediately activate.
                     return 0;
                 }
 
                 if (lastDelayLoc &&
                         loc.x == lastDelayLoc.x && loc.y == lastDelayLoc.y) {
-                    // STOPSHIP
+                    // If the mouse hasn't moved since the last time we checked
+                    // for activation status, immediately activate.
                     return 0;
                 }
 
-                // STOPSHIP -- how all this works
+                // Detect if the user is moving towards the currently activated
+                // submenu.
+                //
+                // If the mouse is heading relatively clearly towards
+                // the submenu's content, we should wait and give the user more
+                // time before activating a new row. If the mouse is heading
+                // elsewhere, we can immediately activate a new row.
+                //
+                // We detect this by calculating the slope formed between the
+                // current mouse location and the upper/lower right points of
+                // the menu. We do the same for the previous mouse location.
+                // If the current mouse location's slopes are
+                // increasing/decreasing appropriately compared to the
+                // previous's, we know the user is moving toward the submenu.
                 function slope(a, b) {
                     return (b.y - a.y) / (b.x - a.x);
                 };
@@ -164,7 +229,9 @@
 
                 if (upperSlope < prevUpperSlope &&
                         lowerSlope > prevLowerSlope) {
-                    // STOPSHIP
+                    // Mouse is moving from previous location towards the
+                    // currently activated submenu. Delay before activating a
+                    // new menu row, because user may be moving into submenu.
                     lastDelayLoc = loc;
                     return DELAY;
                 }
@@ -174,17 +241,16 @@
             };
 
         /**
-         * STOPSHIP
+         * Hook up initial menu events
          */
         var init = function() {
             $menu
-                .mouseenter(mouseenter)
-                .mouseleave(mouseleave)
+                .mouseleave(mouseleaveMenu)
                 .find(options.rowSelector)
                     .mouseenter(mouseenterRow)
                     .mouseleave(mouseleaveRow);
 
-            $(document).mousemove(mousemove);
+            $(document).mousemove(mousemoveDocument);
         };
 
         init();
