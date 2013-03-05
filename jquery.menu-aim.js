@@ -3,8 +3,8 @@
  * between a user trying hover over a dropdown item vs trying to navigate into
  * a submenu's contents.
  *
- * menu-aim assumes that you are using a menu with submenus that expand to the
- * menu's right. It will fire events when the user's mouse enters a new
+ * menu-aim assumes that you have are using a menu with submenus that expand
+ * to the menu's right. It will fire events when the user's mouse enters a new
  * dropdown item *and* when that item is being intentionally hovered over.
  *
  * __________________________
@@ -66,7 +66,7 @@
  * https://github.com/kamens/jQuery-menu-aim
 */
 (function($) {
-	$.fn.menuAim = function(opts) {
+    $.fn.menuAim = function(opts) {
 
         var $menu = $(this),
             activeRow = null,
@@ -148,7 +148,7 @@
 
                 if (delay) {
                     timeoutId = setTimeout(function() {
-                        possiblyActivate(row)
+                        possiblyActivate(row);
                     }, delay);
                 } else {
                     activate(row);
@@ -192,7 +192,7 @@
 
                 if (prevLoc.x < offset.left || prevLoc.x > lowerRight.x ||
                     prevLoc.y < offset.top || prevLoc.y > lowerRight.y) {
-                    // If the previous mouse location was outside of the entir
+                    // If the previous mouse location was outside of the entire
                     // menu's bounds, immediately activate.
                     return 0;
                 }
@@ -218,6 +218,11 @@
                 // If the current mouse location's slopes are
                 // increasing/decreasing appropriately compared to the
                 // previous's, we know the user is moving toward the submenu.
+                //
+                // Note that since the y-axis increases as the cursor moves
+                // down the screen, we are looking for the slope between the
+                // cursor and the upper left corner to decrease over time, not
+                // increase (somewhat counterintuitively).
                 function slope(a, b) {
                     return (b.y - a.y) / (b.x - a.x);
                 };
@@ -255,6 +260,6 @@
 
         init();
         return this;
-	};
+    };
 })(jQuery);
 
