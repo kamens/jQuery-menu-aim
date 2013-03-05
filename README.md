@@ -54,3 +54,5 @@ the relevant row's HTML element as the execution context ('this'):
          // this selector. Defaults to "*" (all elements).
          submenuSelector: "*"
      });
+
+[MIT licensed.](http://en.wikipedia.org/wiki/MIT_License)
