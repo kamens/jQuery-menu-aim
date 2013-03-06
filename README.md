@@ -17,7 +17,7 @@ make for quicker transitions when navigating up and down the menu. The
 experience is hopefully similar to amazon.com/'s "Shop by Department"
 dropdown.
 
-Use like so:
+## Use like so:
 
      $("#menu").menuAim({
          activate: $.noop,  // fired on row activation
@@ -54,5 +54,11 @@ the relevant row's HTML element as the execution context ('this'):
          // this selector. Defaults to "*" (all elements).
          submenuSelector: "*"
      });
+
+## FAQ
+
+1. What's the license? [MIT](http://en.wikipedia.org/wiki/MIT_License).
+2. I'm not nearly bored enough. Got anything else? [Read about this plugin's creation](http://bjk5.com/post/44698559168/breaking-down-amazons-mega-dropdown).
+
 
 [MIT licensed.](http://en.wikipedia.org/wiki/MIT_License)
