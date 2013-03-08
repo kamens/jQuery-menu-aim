@@ -212,28 +212,19 @@
                 // time before activating a new row. If the mouse is heading
                 // elsewhere, we can immediately activate a new row.
                 //
-                // We detect this by calculating the slope formed between the
-                // current mouse location and the upper/lower right points of
-                // the menu. We do the same for the previous mouse location.
-                // If the current mouse location's slopes are
-                // increasing/decreasing appropriately compared to the
-                // previous's, we know the user is moving toward the submenu.
-                //
-                // Note that since the y-axis increases as the cursor moves
-                // down the screen, we are looking for the slope between the
-                // cursor and the upper left corner to decrease over time, not
-                // increase (somewhat counterintuitively).
-                function slope(a, b) {
-                    return (b.y - a.y) / (b.x - a.x);
-                };
+                // We detect this by calculating whether the current cursor
+                // position is inside the triangle formed by the previous
+                // cursor with the upper and lower right points:
+                // http://stackoverflow.com/a/2049593
+                function ccw(a, b, c) {
+                    return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
+                }
 
-                var upperSlope = slope(loc, upperRight),
-                    lowerSlope = slope(loc, lowerRight),
-                    prevUpperSlope = slope(prevLoc, upperRight),
-                    prevLowerSlope = slope(prevLoc, lowerRight);
+                var c1 = ccw(loc, lowerRight, prevLoc),
+                    c2 = ccw(loc, upperRight, lowerRight),
+                    c3 = ccw(loc, prevLoc, upperRight);
 
-                if (upperSlope < prevUpperSlope &&
-                        lowerSlope > prevLowerSlope) {
+                if (c1 > 0 && c2 > 0 && c3 > 0) {
                     // Mouse is moving from previous location towards the
                     // currently activated submenu. Delay before activating a
                     // new menu row, because user may be moving into submenu.
