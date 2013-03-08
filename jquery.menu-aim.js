@@ -218,7 +218,7 @@
                 // http://stackoverflow.com/a/2049593
                 function ccw(a, b, c) {
                     return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
-                };
+                }
 
                 var c1 = ccw(loc, lowerRight, prevLoc),
                     c2 = ccw(loc, upperRight, lowerRight),
