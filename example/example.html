@@ -38,6 +38,16 @@
             -webkit-border-bottom-left-radius: 0px;
             border-top-left-radius: 0px;
             border-bottom-left-radius: 0px;
+            overflow: hidden;
+        }
+
+        .popover-content {
+            text-align: center;
+        }
+
+        .popover-content img {
+            height: 212px;
+            max-width: 250px;
         }
 
         .dropdown-menu > li > a:hover {
@@ -115,43 +125,43 @@
     -->
     <div id="submenu-patas" class="popover">
         <h3 class="popover-title">Patas</h3>
-        <div class="popover-content"></div>
+        <div class="popover-content"><img src="img/patas.png"></div>
     </div>
     <div id="submenu-snub-nosed" class="popover">
         <h3 class="popover-title">Golden Snub-Nosed</h3>
-        <div class="popover-content"></div>
+        <div class="popover-content"><img src="img/snub-nosed.png"></div>
     </div>
     <div id="submenu-duoc-langur" class="popover">
         <h3 class="popover-title">Duoc Langur</h3>
-        <div class="popover-content"></div>
+        <div class="popover-content"><img src="img/duoc-langur.png"></div>
     </div>
     <div id="submenu-pygmy" class="popover">
         <h3 class="popover-title">Baby Pygmy Marmoset</h3>
-        <div class="popover-content"></div>
+        <div class="popover-content"><img src="img/pygmy.png"></div>
     </div>
     <div id="submenu-tamarin" class="popover">
         <h3 class="popover-title">Black Lion Tamarin</h3>
-        <div class="popover-content"></div>
+        <div class="popover-content"><img src="img/tamarin.png"></div>
     </div>
     <div id="submenu-monk" class="popover">
         <h3 class="popover-title">Monk Saki</h3>
-        <div class="popover-content"></div>
+        <div class="popover-content"><img src="img/monk.png"></div>
     </div>
     <div id="submenu-gabon" class="popover">
         <h3 class="popover-title">Gabon</h3>
-        <div class="popover-content"></div>
+        <div class="popover-content"><img src="img/gabon.png"></div>
     </div>
     <div id="submenu-grivet" class="popover">
         <h3 class="popover-title">Grivet</h3>
-        <div class="popover-content"></div>
+        <div class="popover-content"><img src="img/grivet.png"></div>
     </div>
     <div id="submenu-red-leaf" class="popover">
         <h3 class="popover-title">Red Leaf</h3>
-        <div class="popover-content"></div>
+        <div class="popover-content"><img src="img/red-leaf.png"></div>
     </div>
     <div id="submenu-king-colobus" class="popover">
         <h3 class="popover-title">King Colobus</h3>
-        <div class="popover-content"></div>
+        <div class="popover-content"><img src="img/colobus.png"></div>
     </div>
 
     <script src="js/jquery-1.9.1.min.js"></script>
@@ -202,6 +212,12 @@
             $submenu.css("display", "none");
             $row.find("a").removeClass("maintainHover");
         }
+
+        $(document).click(function() {
+            // Simply hide the submenu on any click. Again, this is just a hacked
+            // together menu/submenu structure to show the use of jQuery-menu-aim.
+            $(".popover").css("display", "none");
+        });
 
     </script>
 
