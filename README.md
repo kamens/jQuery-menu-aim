@@ -60,5 +60,6 @@ the relevant row's HTML element as the execution context ('this'):
 1. What's the license? [MIT](http://en.wikipedia.org/wiki/MIT_License).
 2. I'm not nearly bored enough. Got anything else? [Read about this plugin's creation](http://bjk5.com/post/44698559168/breaking-down-amazons-mega-dropdown).
 
+## Want an example?
 
-[MIT licensed.](http://en.wikipedia.org/wiki/MIT_License)
+Check out example/example.html -- it has a working dropdown for you to play with.
