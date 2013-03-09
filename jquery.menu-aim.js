@@ -221,7 +221,7 @@
                 //
                 // Note that since the y-axis increases as the cursor moves
                 // down the screen, we are looking for the slope between the
-                // cursor and the upper left corner to decrease over time, not
+                // cursor and the upper right corner to decrease over time, not
                 // increase (somewhat counterintuitively).
                 function slope(a, b) {
                     return (b.y - a.y) / (b.x - a.x);
