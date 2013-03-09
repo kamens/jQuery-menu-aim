@@ -55,11 +55,14 @@ the relevant row's HTML element as the execution context ('this'):
          submenuSelector: "*"
      });
 
+## Want an example to learn from?
+
+Check out example/example.html -- it has a working dropdown for you to play with:
+
+![Example screenshot](https://raw.github.com/kamens/jQuery-menu-aim/master/example.png)<br>
+_Play with the above example full of fun monkey pictures by opening example/example.html after downloading the repo._
+
 ## FAQ
 
 1. What's the license? [MIT](http://en.wikipedia.org/wiki/MIT_License).
 2. I'm not nearly bored enough. Got anything else? [Read about this plugin's creation](http://bjk5.com/post/44698559168/breaking-down-amazons-mega-dropdown).
-
-## Want an example?
-
-Check out example/example.html -- it has a working dropdown for you to play with.
