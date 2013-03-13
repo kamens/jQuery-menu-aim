@@ -74,6 +74,7 @@
             lastDelayLoc = null,
             timeoutId = null,
             options = $.extend({
+                vertical: true,
                 rowSelector: "> li",
                 submenuSelector: "*",
                 tolerance: 75,  // bigger = more forgivey when entering submenu
@@ -171,14 +172,6 @@
                 }
 
                 var offset = $menu.offset(),
-                    upperRight = {
-                        x: offset.left + $menu.outerWidth(),
-                        y: offset.top - options.tolerance
-                    },
-                    lowerRight = {
-                        x: offset.left + $menu.outerWidth(),
-                        y: offset.top + $menu.outerHeight() + options.tolerance
-                    },
                     loc = mouseLocs[mouseLocs.length - 1],
                     prevLoc = mouseLocs[0];
 
@@ -190,8 +183,12 @@
                     prevLoc = loc;
                 }
 
-                if (prevLoc.x < offset.left || prevLoc.x > lowerRight.x ||
-                    prevLoc.y < offset.top || prevLoc.y > lowerRight.y) {
+                var trueLowerRight = {
+                    x: offset.left + $menu.outerWidth(),
+                    y: offset.top + $menu.outerHeight() + options.tolerance
+                };
+                if (prevLoc.x < offset.left || prevLoc.x > trueLowerRight.x ||
+                    prevLoc.y < offset.top || prevLoc.y > trueLowerRight.y) {
                     // If the previous mouse location was outside of the entire
                     // menu's bounds, immediately activate.
                     return 0;
@@ -227,6 +224,15 @@
                     return (b.y - a.y) / (b.x - a.x);
                 };
 
+            if(options.vertical){
+                var upperRight = {
+                    x: offset.left + $menu.outerWidth(),
+                    y: offset.top - options.tolerance
+                },
+                lowerRight = {
+                    x: offset.left + $menu.outerWidth(),
+                    y: offset.top + $menu.outerHeight() + options.tolerance
+                };
                 var upperSlope = slope(loc, upperRight),
                     lowerSlope = slope(loc, lowerRight),
                     prevUpperSlope = slope(prevLoc, upperRight),
@@ -240,6 +246,32 @@
                     lastDelayLoc = loc;
                     return DELAY;
                 }
+            } else {
+                //Horizontal menu
+                var lowerLeft = {
+                        x: offset.left - options.tolerance,
+                        y: offset.top + $menu.outerHeight()
+                    },
+                    lowerRight = {
+                        x: offset.left + $menu.outerWidth() + options.tolerance,
+                        y: offset.top + $menu.outerHeight()
+                    };
+                var leftSlope  = slope(loc, lowerLeft),
+                    rightSlope = slope(loc, lowerRight),
+                    prevleftSlope  = slope(prevLoc, lowerLeft),
+                    prevrightSlope = slope(prevLoc, lowerRight);
+
+
+                if ( rightSlope < prevrightSlope &&
+                    leftSlope > prevleftSlope ) {
+                    // Mouse is moving from previous location towards the
+                    // currently activated submenu. Delay before activating a
+                    // new menu row, because user may be moving into submenu.
+                    lastDelayLoc = loc;
+                    return DELAY;
+                }
+
+            }
 
                 lastDelayLoc = null;
                 return 0;
