@@ -74,6 +74,7 @@
             lastDelayLoc = null,
             timeoutId = null,
             options = $.extend({
+                closeMenuOnMouseLeave: false,
                 vertical: true,
                 rowSelector: "> li",
                 submenuSelector: "*",
@@ -104,6 +105,10 @@
         var mouseleaveMenu = function() {
                 if (timeoutId) {
                     clearTimeout(timeoutId);
+                }
+                if(options.closeMenuOnMouseLeave){
+                    options.deactivate(activeRow);
+                    activeRow = null;
                 }
             };
 
