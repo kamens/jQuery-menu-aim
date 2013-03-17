@@ -253,9 +253,8 @@
                 .mouseleave(mouseleaveMenu)
                 .find(options.rowSelector)
                     .mouseenter(mouseenterRow)
-                    .mouseleave(mouseleaveRow);
-
-            $(document).mousemove(mousemoveDocument);
+                    .mouseleave(mouseleaveRow)
+                    .mousemove(mousemoveDocument);
         };
 
         init();
