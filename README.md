@@ -5,9 +5,7 @@ menu-aim is a jQuery plugin for dropdown menus that can differentiate
 between a user trying hover over a dropdown item vs trying to navigate into
 a submenu's contents.
 
-menu-aim assumes that you are using a menu with submenus that expand
-to the menu's right. It will fire events when the user's mouse enters a new
-dropdown item *and* when that item is being intentionally hovered over.
+[Try a demo.](http://htmlpreview.github.com/?https://github.com/kamens/jQuery-menu-aim/blob/master/example/example.html)
 
 ![Amazon screenshot](https://raw.github.com/kamens/jQuery-menu-aim/master/amazon.png)
 
@@ -55,9 +53,13 @@ the relevant row's HTML element as the execution context ('this'):
          submenuSelector: "*"
      });
 
+menu-aim assumes that you are using a menu with submenus that expand
+to the menu's right. It will fire events when the user's mouse enters a new
+dropdown item *and* when that item is being intentionally hovered over.
+
 ## Want an example to learn from?
 
-Check out example/example.html -- it has a working dropdown for you to play with:
+Check out example/example.html -- it has [a working dropdown for you to play with](http://htmlpreview.github.com/?https://github.com/kamens/jQuery-menu-aim/blob/master/example/example.html):
 
 ![Example screenshot](https://raw.github.com/kamens/jQuery-menu-aim/master/example.png)<br>
 _Play with the above example full of fun monkey pictures by opening example/example.html after downloading the repo._
