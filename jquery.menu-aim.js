@@ -104,6 +104,7 @@
                 if (timeoutId) {
                     clearTimeout(timeoutId);
                 }
+                activeRow = null;
             };
 
         /**
