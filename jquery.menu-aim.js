@@ -66,8 +66,17 @@
  * https://github.com/kamens/jQuery-menu-aim
 */
 (function($) {
-    $.fn.menuAim = function(opts) {
 
+    $.fn.menuAim = function(opts) {
+        // Initialize menu-aim for all elements in jQuery collection
+        this.each(function() {
+            init.call(this, opts);
+        });
+
+        return this;
+    };
+
+    function init(opts) {
         var $menu = $(this),
             activeRow = null,
             mouseLocs = [],
@@ -248,18 +257,13 @@
         /**
          * Hook up initial menu events
          */
-        var init = function() {
-            $menu
-                .mouseleave(mouseleaveMenu)
-                .find(options.rowSelector)
-                    .mouseenter(mouseenterRow)
-                    .mouseleave(mouseleaveRow);
+        $menu
+            .mouseleave(mouseleaveMenu)
+            .find(options.rowSelector)
+                .mouseenter(mouseenterRow)
+                .mouseleave(mouseleaveRow);
+        $(document).mousemove(mousemoveDocument);
 
-            $(document).mousemove(mousemoveDocument);
-        };
-
-        init();
-        return this;
     };
 })(jQuery);
 
