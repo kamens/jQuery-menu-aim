@@ -89,7 +89,8 @@
                 enter: $.noop,
                 exit: $.noop,
                 activate: $.noop,
-                deactivate: $.noop
+                deactivate: $.noop,
+                exitMenu: $.noop
             }, opts);
 
         var MOUSE_LOCS_TRACKED = 3,  // number of past mouse locations to track
@@ -112,6 +113,16 @@
         var mouseleaveMenu = function() {
                 if (timeoutId) {
                     clearTimeout(timeoutId);
+                }
+
+                // If exitMenu is supplied and returns true, deactivate the
+                // currently active row on menu exit.
+                if (options.exitMenu(this)) {
+                    if (activeRow) {
+                        options.deactivate(activeRow);
+                    }
+
+                    activeRow = null;
                 }
             };
 
