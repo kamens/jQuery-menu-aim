@@ -57,7 +57,13 @@ the relevant row's HTML element as the execution context ('this'):
          // You may have some menu rows that aren't submenus and therefore
          // shouldn't ever need to "activate." If so, filter submenu rows w/
          // this selector. Defaults to "*" (all elements).
-         submenuSelector: "*"
+         submenuSelector: "*",
+
+         // Direction the submenu opens relative to the main menu. This
+         // controls which direction is "forgiving" as the user moves their
+         // cursor from the main menu into the submenu. Can be one of "right",
+         // "left", "above", or "below". Defaults to "right".
+         submenuDirection: "right"
      });
 
 menu-aim assumes that you are using a menu with submenus that expand

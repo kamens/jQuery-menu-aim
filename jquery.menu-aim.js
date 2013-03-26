@@ -60,7 +60,11 @@
  *          // You may have some menu rows that aren't submenus and therefore
  *          // shouldn't ever need to "activate." If so, filter submenu rows w/
  *          // this selector. Defaults to "*" (all elements).
- *          submenuSelector: "*"
+ *          submenuSelector: "*",
+ *
+ *          // Direction the submenu opens relative to the main menu. Can be
+ *          // left, right, above, or below. Defaults to "right".
+ *          submenuDirection: "right"
  *      });
  *
  * https://github.com/kamens/jQuery-menu-aim
@@ -85,6 +89,7 @@
             options = $.extend({
                 rowSelector: "> li",
                 submenuSelector: "*",
+                submenuDirection: "right",
                 tolerance: 75,  // bigger = more forgivey when entering submenu
                 enter: $.noop,
                 exit: $.noop,
@@ -191,13 +196,21 @@
                 }
 
                 var offset = $menu.offset(),
+                    upperLeft = {
+                        x: offset.left,
+                        y: offset.top - options.tolerance
+                    },
                     upperRight = {
                         x: offset.left + $menu.outerWidth(),
-                        y: offset.top - options.tolerance
+                        y: upperLeft.y
+                    },
+                    lowerLeft = {
+                        x: offset.left,
+                        y: offset.top + $menu.outerHeight() + options.tolerance
                     },
                     lowerRight = {
                         x: offset.left + $menu.outerWidth(),
-                        y: offset.top + $menu.outerHeight() + options.tolerance
+                        y: lowerLeft.y
                     },
                     loc = mouseLocs[mouseLocs.length - 1],
                     prevLoc = mouseLocs[0];
@@ -247,13 +260,34 @@
                     return (b.y - a.y) / (b.x - a.x);
                 };
 
-                var upperSlope = slope(loc, upperRight),
-                    lowerSlope = slope(loc, lowerRight),
-                    prevUpperSlope = slope(prevLoc, upperRight),
-                    prevLowerSlope = slope(prevLoc, lowerRight);
+                var decreasingCorner = upperRight,
+                    increasingCorner = lowerRight;
 
-                if (upperSlope < prevUpperSlope &&
-                        lowerSlope > prevLowerSlope) {
+                // Our expectations for decreasing or increasing slope values
+                // depends on which direction the submenu opens relative to the
+                // main menu. By default, if the menu opens on the right, we
+                // expect the slope between the cursor and the upper right
+                // corner to decrease over time, as explained above. If the
+                // submenu opens in a different direction, we change our slope
+                // expectations.
+                if (options.submenuDirection == "left") {
+                    decreasingCorner = lowerLeft;
+                    increasingCorner = upperLeft;
+                } else if (options.submenuDirection == "below") {
+                    decreasingCorner = lowerRight;
+                    increasingCorner = lowerLeft;
+                } else if (options.submenuDirection == "above") {
+                    decreasingCorner = upperLeft;
+                    increasingCorner = upperRight;
+                }
+
+                var decreasingSlope = slope(loc, decreasingCorner),
+                    increasingSlope = slope(loc, increasingCorner),
+                    prevDecreasingSlope = slope(prevLoc, decreasingCorner),
+                    prevIncreasingSlope = slope(prevLoc, increasingCorner);
+
+                if (decreasingSlope < prevDecreasingSlope &&
+                        increasingSlope > prevIncreasingSlope) {
                     // Mouse is moving from previous location towards the
                     // currently activated submenu. Delay before activating a
                     // new menu row, because user may be moving into submenu.
