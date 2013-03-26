@@ -19,7 +19,7 @@ dropdown.
 
      $("#menu").menuAim({
          activate: $.noop,  // fired on row activation
-         deactivate: $.noop,  // fired on row deactivation
+         deactivate: $.noop  // fired on row deactivation
      });
 
 ...to receive events when a menu's row has been purposefully (de)activated.
