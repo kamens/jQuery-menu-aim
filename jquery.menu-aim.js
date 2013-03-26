@@ -67,7 +67,7 @@
 */
 (function($) {
     $.fn.menuAim = function(opts) {
-
+     var action = function(){
         var $menu = $(this),
             activeRow = null,
             mouseLocs = [],
@@ -259,7 +259,8 @@
         };
 
         init();
-        return this;
+     }; /* end action function definition */    
+     return this.each(action);
     };
 })(jQuery);
 
