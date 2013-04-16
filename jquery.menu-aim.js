@@ -39,11 +39,13 @@
  *
  *      .menuAim({
  *          // Function to call when a row is purposefully activated. Use this
- *          // to show a submenu's content for the activated row.
- *          activate: function() {},
+ *        	// to show a submenu's content for the activated row.
+ *        	// previouslyActivatedRow parameter can be null if no row was active before.
+ *        	activate: function(activatedRow, previouslyActivatedRow) {},
  *
- *          // Function to call when a row is deactivated.
- *          deactivate: function() {},
+ *        	// Function to call when a row is deactivated.
+ *        	// postActivatedRow parameter can be null if mouse cursor exited menu.
+ *        	deactivate: function(deactivatedRow, postActivatedRow) {},
  *
  *          // Function to call when mouse enters a menu row. Entering a row
  *          // does not mean the row has been activated, as the user may be
@@ -131,7 +133,7 @@
                 // currently active row on menu exit.
                 if (options.exitMenu(this)) {
                     if (activeRow) {
-                        options.deactivate(activeRow);
+                        options.deactivate(activeRow, null);
                     }
 
                     activeRow = null;
@@ -178,10 +180,10 @@
 		        
 		        function reallyActivate() {
 		        	if (activeRow) {
-	                    options.deactivate(activeRow);
+	                    options.deactivate(activeRow, row);
 	                }
 	
-	                options.activate(row);
+	                options.activate(row, activeRow);
 	                activeRow = row;
 		        }
             };
