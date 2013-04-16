@@ -64,7 +64,12 @@
  *
  *          // Direction the submenu opens relative to the main menu. Can be
  *          // left, right, above, or below. Defaults to "right".
- *          submenuDirection: "right"
+ *          submenuDirection: "right",
+ *
+ *			// This option adds a delay (in milliseconds) before really opening
+ *			// submenu to prevent flickering submenus when moving cursor quickly
+ *			// between rows. Default is 0
+ *			activationDelay: 0
  *      });
  *
  * https://github.com/kamens/jQuery-menu-aim
