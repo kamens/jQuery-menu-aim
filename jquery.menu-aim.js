@@ -86,6 +86,7 @@
             mouseLocs = [],
             lastDelayLoc = null,
             timeoutId = null,
+            activationTimeoutId = undefined,
             options = $.extend({
                 rowSelector: "> li",
                 submenuSelector: "*",
@@ -95,7 +96,8 @@
                 exit: $.noop,
                 activate: $.noop,
                 deactivate: $.noop,
-                exitMenu: $.noop
+                exitMenu: $.noop,
+                activationDelay: 0
             }, opts);
 
         var MOUSE_LOCS_TRACKED = 3,  // number of past mouse locations to track
@@ -144,6 +146,11 @@
                 possiblyActivate(this);
             },
             mouseleaveRow = function() {
+                if(activationTimeoutId){ 
+                	clearTimeout(activationTimeoutId);
+                	activationTimeoutId = undefined;
+                }
+                
                 options.exit(this);
             };
 
@@ -154,13 +161,24 @@
                 if (row == activeRow) {
                     return;
                 }
-
-                if (activeRow) {
-                    options.deactivate(activeRow);
-                }
-
-                options.activate(row);
-                activeRow = row;
+				
+				if(options.activationDelay > 0) {
+					if(activationTimeoutId) {
+						clearTimeout(activationTimeoutId);
+					}
+					activationTimeoutId = setTimeout(reallyActivate, options.activationDelay);
+		        } else {
+		        	reallyActivate();
+		        }
+		        
+		        function reallyActivate() {
+		        	if (activeRow) {
+	                    options.deactivate(activeRow);
+	                }
+	
+	                options.activate(row);
+	                activeRow = row;
+		        }
             };
 
         /**
