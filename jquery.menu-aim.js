@@ -147,6 +147,13 @@
                 options.exit(this);
             };
 
+        /*
+         * Immediately activate a row if the user clicks on it.
+         */
+        var clickRow = function() {
+                activate(this);
+            };
+
         /**
          * Activate a menu row.
          */
@@ -306,7 +313,9 @@
             .mouseleave(mouseleaveMenu)
             .find(options.rowSelector)
                 .mouseenter(mouseenterRow)
-                .mouseleave(mouseleaveRow);
+                .mouseleave(mouseleaveRow)
+                .click(clickRow);
+
         $(document).mousemove(mousemoveDocument);
 
     };
