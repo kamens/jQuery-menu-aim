@@ -1,5 +1,5 @@
-jQuery-menu-aim
-===============
+# jQuery-menu-aim
+> GitHub Pages Version
 
 menu-aim is a jQuery plugin for dropdown menus that can differentiate
 between a user trying hover over a dropdown item vs trying to navigate into
@@ -82,3 +82,4 @@ _Play with the above example full of fun monkey pictures by opening example/exam
 1. What's the license? [MIT](http://en.wikipedia.org/wiki/MIT_License).
 2. Does it support horizontal menus or submenus that open to the left? Yup. Check out the submenuDirection option above.
 3. I'm not nearly bored enough. Got anything else? [Read about this plugin's creation](http://bjk5.com/post/44698559168/breaking-down-amazons-mega-dropdown).
+
