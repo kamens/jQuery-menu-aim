@@ -144,6 +144,10 @@
                 possiblyActivate(this);
             },
             mouseleaveRow = function() {
+                if (timeoutId) {
+                    // Cancel any pending activation
+                    clearTimeout(timeoutId);
+                }
                 options.exit(this);
             };
 
