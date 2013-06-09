@@ -65,6 +65,10 @@
  *          // Direction the submenu opens relative to the main menu. Can be
  *          // left, right, above, or below. Defaults to "right".
  *          submenuDirection: "right"
+ 
+ *          // Close submenu if mouse moves out of menu.
+ *          exitOnMouseOut: false
+
  *      });
  *
  * https://github.com/kamens/jQuery-menu-aim
@@ -95,7 +99,8 @@
                 exit: $.noop,
                 activate: $.noop,
                 deactivate: $.noop,
-                exitMenu: $.noop
+                exitMenu: $.noop,
+				exitOnMouseOut: false
             }, opts);
 
         var MOUSE_LOCS_TRACKED = 3,  // number of past mouse locations to track
@@ -122,7 +127,7 @@
 
                 // If exitMenu is supplied and returns true, deactivate the
                 // currently active row on menu exit.
-                if (options.exitMenu(this)) {
+                if (options.exitMenu(this) || options.exitOnMouseOut) {
                     if (activeRow) {
                         options.deactivate(activeRow);
                     }
