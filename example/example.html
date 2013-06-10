@@ -177,6 +177,9 @@
                             <div class="popover-content"><img src="img/colobus.png"></div>
                         </div>
                     </li>
+	                <li data-submenu-id="submenu-empty-item">
+		                <a href="#">Empty item</a>
+	                </li>
                 </ul>
               </li>
             </ul>
@@ -203,7 +206,9 @@
         // Hook up events to be fired on menu row activation.
         $menu.menuAim({
             activate: activateSubmenu,
-            deactivate: deactivateSubmenu
+            deactivate: deactivateSubmenu,
+	        exitOnMouseOut: true, //this is optional
+	        submenuWrap: '.popover' //this is optional
         });
         // jQuery-menu-aim: </meaningful part of the example>
 

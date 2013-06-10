@@ -64,7 +64,7 @@
  *
  *           // What element wraps the submenu you want show on hover?
  *          // It's useful to know because then code can detect if hovered element has one and if not, no delay will
- *          // be applied to activate next menu item
+ *          // be applied to activate next menu item. Defaults to "*" (all elements).
  *          submenuWrap: "*",
  *
  *          // Direction the submenu opens relative to the main menu. Can be
