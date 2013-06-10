@@ -62,6 +62,11 @@
  *          // this selector. Defaults to "*" (all elements).
  *          submenuSelector: "*",
  *
+ *           // What element wraps the submenu you want show on hover?
+ *          // It's useful to know because then code can detect if hovered element has one and if not, no delay will
+ *          // be applied to activate next menu item
+ *          submenuWrap: "*",
+ *
  *          // Direction the submenu opens relative to the main menu. Can be
  *          // left, right, above, or below. Defaults to "right".
  *          submenuDirection: "right"
@@ -93,6 +98,7 @@
             options = $.extend({
                 rowSelector: "> li",
                 submenuSelector: "*",
+	            submenuWrap: '*',
                 submenuDirection: "right",
                 tolerance: 75,  // bigger = more forgivey when entering submenu
                 enter: $.noop,
@@ -163,17 +169,24 @@
          * Activate a menu row.
          */
         var activate = function(row) {
-                if (row == activeRow) {
-                    return;
-                }
+            if (row == activeRow) {
+                return;
+            }
 
-                if (activeRow) {
-                    options.deactivate(activeRow);
-                }
+            if (activeRow) {
+                options.deactivate(activeRow);
+            }
 
-                options.activate(row);
-                activeRow = row;
-            };
+            options.activate(row);
+            activeRow = row;
+
+	        //check if we have subemenu. if not we can activate next menu item instantly.
+	        if ($(row).find(options.submenuWrap).length === 0) {
+		        wasRowEmpty = false;
+	        } else {
+		        wasRowEmpty = true;
+	        }
+        };
 
         /**
          * Possibly activate a menu row. If mouse movement indicates that we
@@ -183,7 +196,7 @@
         var possiblyActivate = function(row) {
                 var delay = activationDelay();
 
-                if (delay) {
+                if (delay && wasRowEmpty) {
                     timeoutId = setTimeout(function() {
                         possiblyActivate(row);
                     }, delay);
