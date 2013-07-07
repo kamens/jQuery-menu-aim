@@ -5,7 +5,7 @@ menu-aim is a jQuery plugin for dropdown menus that can differentiate
 between a user trying hover over a dropdown item vs trying to navigate into
 a submenu's contents.
 
-[Try a demo.](http://htmlpreview.github.com/?https://github.com/kamens/jQuery-menu-aim/blob/master/example/example.html)
+[Try a demo.](https://rawgithub.com/kamens/jQuery-menu-aim/master/example/example.html)
 
 ![Amazon screenshot](https://raw.github.com/kamens/jQuery-menu-aim/master/amazon.png)
 
