@@ -72,7 +72,7 @@ dropdown item *and* when that item is being intentionally hovered over.
 
 ## Want an example to learn from?
 
-Check out example/example.html -- it has [a working dropdown for you to play with](http://htmlpreview.github.com/?https://github.com/kamens/jQuery-menu-aim/blob/master/example/example.html):
+Check out example/example.html -- it has [a working dropdown for you to play with](https://rawgithub.com/kamens/jQuery-menu-aim/master/example/example.html):
 
 ![Example screenshot](https://raw.github.com/kamens/jQuery-menu-aim/master/example.png)<br>
 _Play with the above example full of fun monkey pictures by opening example/example.html after downloading the repo._
