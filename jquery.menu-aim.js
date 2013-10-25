@@ -308,6 +308,16 @@
         return 0;
     };
 
+    MenuAim.prototype.destroy = function() {
+        this.$menu.removeData("jquery.menu-aim");
+
+        this.$menu.off(".menu-aim")
+            .find(this.options.rowSelector)
+            .off(".menu-aim");
+
+        $(document).off(".menu-aim");
+    };
+
     MenuAim.prototype.init = function(element, option) {
         this.$menu = $(element);
         this.activeRow = null;
@@ -324,13 +334,13 @@
          */
 
         this.$menu
-            .mouseleave($.proxy(this.mouseleaveMenu, this))
+            .on("mouseleave.menu-aim", $.proxy(this.mouseleaveMenu, this))
             .find(this.options.rowSelector)
-                .mouseenter($.proxy(this.mouseenterRow, this))
-                .mouseleave($.proxy(this.mouseleaveRow, this))
-                .click($.proxy(this.clickRow, this));
+                .on("mouseenter.menu-aim", $.proxy(this.mouseenterRow, this))
+                .on("mouseleave.menu-aim", $.proxy(this.mouseleaveRow, this))
+                .on("click.menu-aim", $.proxy(this.clickRow, this));
 
-        $(document).mousemove($.proxy(this.mousemoveDocument, this));
+        $(document).on("mousemove.menu-aim", $.proxy(this.mousemoveDocument, this));
 
     };
 
@@ -342,6 +352,10 @@
 
             if (!data) {
                 $this.data("jquery.menu-aim", (data = new MenuAim(this, options)));
+            }
+
+            if (typeof opts == "string") {
+                data[opts]();
             }
 
         });
