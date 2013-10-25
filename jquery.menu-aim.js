@@ -177,11 +177,12 @@
      * a submenu's content, then delay and check again later.
      */
     MenuAim.prototype.possiblyActivate = function(row) {
-        var delay = this.activationDelay();
+        var delay = this.activationDelay()
+          , self = this;
 
         if (delay) {
             this.timeoutId = setTimeout(function() {
-                this.possiblyActivate(row);
+                self.possiblyActivate(row);
             }, delay);
         } else {
             this.activate(row);
