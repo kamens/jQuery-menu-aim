@@ -318,6 +318,18 @@
         $(document).off(".menu-aim");
     };
 
+    MenuAim.prototype.reset = function(triggerDeactivate) {
+        if (this.timeoutId) {
+            clearTimeout(this.timeoutId);
+        }
+
+        if (this.activeRow && triggerDeactivate) {
+            this.options.deactivate(this.activeRow);
+        }
+
+        this.activeRow = null;
+    };
+
     MenuAim.prototype.init = function(element, option) {
         this.$menu = $(element);
         this.activeRow = null;
