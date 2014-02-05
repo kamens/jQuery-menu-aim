@@ -1,7 +1,8 @@
 /**
  * menu-aim is a jQuery plugin for dropdown menus that can differentiate
  * between a user trying hover over a dropdown item vs trying to navigate into
- * a submenu's contents.
+ * a submenu's contents. It will fire events when the user's mouse enters a 
+ * new dropdown item *and* when that item is being intentionally hovered over.
  *
  * menu-aim assumes that you have are using a menu with submenus that expand
  * to the menu's right. It will fire events when the user's mouse enters a new
@@ -95,11 +96,11 @@
                 exit: $.noop,
                 activate: $.noop,
                 deactivate: $.noop,
-                exitMenu: $.noop
+                exitMenu: $.noop,
+                delay: 300
             }, opts);
 
-        var MOUSE_LOCS_TRACKED = 3,  // number of past mouse locations to track
-            DELAY = 300;  // ms delay when user appears to be entering submenu
+        var MOUSE_LOCS_TRACKED = 3;  // number of past mouse locations to track
 
         /**
          * Keep track of the last few locations of the mouse.
@@ -144,6 +145,12 @@
                 possiblyActivate(this);
             },
             mouseleaveRow = function() {
+
+                /* https://github.com/kamens/jQuery-menu-aim/pull/29/commits - thanks to magwo */
+                if (timeoutId) {
+                    // Cancel any pending activation
+                    clearTimeout(timeoutId);
+                }
                 options.exit(this);
             };
 
@@ -164,6 +171,12 @@
 
                 if (activeRow) {
                     options.deactivate(activeRow);
+                }
+
+                /* https://github.com/kamens/jQuery-menu-aim/pull/33/commits */
+                if (! $(row).is(options.submenuSelector)){
+                    activeRow = null;
+                    return;
                 }
 
                 options.activate(row);
@@ -205,7 +218,7 @@
                 var offset = $menu.offset(),
                     upperLeft = {
                         x: offset.left,
-                        y: offset.top - options.tolerance
+                        y: offset.top
                     },
                     upperRight = {
                         x: offset.left + $menu.outerWidth(),
@@ -213,7 +226,7 @@
                     },
                     lowerLeft = {
                         x: offset.left,
-                        y: offset.top + $menu.outerHeight() + options.tolerance
+                        y: offset.top + $menu.outerHeight()
                     },
                     lowerRight = {
                         x: offset.left + $menu.outerWidth(),
@@ -228,6 +241,22 @@
 
                 if (!prevLoc) {
                     prevLoc = loc;
+                }
+
+                /* https://github.com/kamens/jQuery-menu-aim/pull/22/commits - thanks to tuckbick */
+                // Adjust the corner points to enable tolerance.
+                if (options.submenuDirection == "right") {
+                    upperRight.y -= options.tolerance;
+                    lowerRight.y += options.tolerance;
+                } else if (options.submenuDirection == "left") {
+                    upperLeft.y -= options.tolerance;
+                    lowerLeft.y += options.tolerance;
+                } else if (options.submenuDirection == "above") {
+                    upperLeft.x -= options.tolerance;
+                    upperRight.x += options.tolerance;
+                } else if (options.submenuDirection == "below") {
+                    lowerLeft.x -= options.tolerance;
+                    lowerRight.x += options.tolerance;
                 }
 
                 if (prevLoc.x < offset.left || prevLoc.x > lowerRight.x ||
@@ -299,7 +328,7 @@
                     // currently activated submenu. Delay before activating a
                     // new menu row, because user may be moving into submenu.
                     lastDelayLoc = loc;
-                    return DELAY;
+                    return options.delay;
                 }
 
                 lastDelayLoc = null;
@@ -316,8 +345,17 @@
                 .mouseleave(mouseleaveRow)
                 .click(clickRow);
 
+        /* https://github.com/kamens/jQuery-menu-aim/pull/31/commits - thanks to saralk */
+        $menu.bind('DOMNodeInserted', function(e) {
+            var $newEl = $(e.target);
+            if ($newEl.is(options.rowSelector)) {
+                $newEl.mouseenter(mouseenterRow)
+                    .mouseleave(mouseleaveRow)
+                    .click(clickRow);
+            }
+        });
+
         $(document).mousemove(mousemoveDocument);
 
     };
 })(jQuery);
-
