@@ -70,6 +70,9 @@
  * https://github.com/kamens/jQuery-menu-aim
 */
 (function($) {
+    var mouseLocs = [],
+        MOUSE_LOCS_TRACKED = 3,  // number of past mouse locations to track
+        DELAY = 300;  // ms delay when user appears to be entering submenu;
 
     $.fn.menuAim = function(opts) {
         // Initialize menu-aim for all elements in jQuery collection
@@ -83,7 +86,6 @@
     function init(opts) {
         var $menu = $(this),
             activeRow = null,
-            mouseLocs = [],
             lastDelayLoc = null,
             timeoutId = null,
             options = $.extend({
@@ -97,20 +99,6 @@
                 deactivate: $.noop,
                 exitMenu: $.noop
             }, opts);
-
-        var MOUSE_LOCS_TRACKED = 3,  // number of past mouse locations to track
-            DELAY = 300;  // ms delay when user appears to be entering submenu
-
-        /**
-         * Keep track of the last few locations of the mouse.
-         */
-        var mousemoveDocument = function(e) {
-                mouseLocs.push({x: e.pageX, y: e.pageY});
-
-                if (mouseLocs.length > MOUSE_LOCS_TRACKED) {
-                    mouseLocs.shift();
-                }
-            };
 
         /**
          * Cancel possible row activations when leaving the menu entirely
@@ -315,9 +303,17 @@
                 .mouseenter(mouseenterRow)
                 .mouseleave(mouseleaveRow)
                 .click(clickRow);
-
-        $(document).mousemove(mousemoveDocument);
-
     };
+
+    /**
+     * Keep track of the last few locations of the mouse.
+     */
+    $(document).mousemove(function(e) {
+        mouseLocs.push({x: e.pageX, y: e.pageY});
+
+        if (mouseLocs.length > MOUSE_LOCS_TRACKED) {
+            mouseLocs.shift();
+        }
+    });
 })(jQuery);
 
