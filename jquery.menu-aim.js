@@ -27,17 +27,17 @@
  *
  * Use like so:
  *
- *      $("#menu").menuAim({
- *          activate: $.noop,  // fired on row activation
- *          deactivate: $.noop  // fired on row deactivation
- *      });
+ *      menuAim( document.querySelectorAll( "#menu" ), {
+ *          activate: function () {},  // fired on row activation
+ *          deactivate: function () {}  // fired on row deactivation
+ *      } );
  *
  *  ...to receive events when a menu's row has been purposefully (de)activated.
  *
  * The following options can be passed to menuAim. All functions execute with
  * the relevant row's HTML element as the execution context ('this'):
  *
- *      .menuAim({
+ *      menuAim( DOMEmenent, {
  *          // Function to call when a row is purposefully activated. Use this
  *          // to show a submenu's content for the activated row.
  *          activate: function() {},
@@ -54,8 +54,8 @@
  *          exit: function() {},
  *
  *          // Selector for identifying which elements in the menu are rows
- *          // that can trigger the above events. Defaults to "> li".
- *          rowSelector: "> li",
+ *          // that can trigger the above events. Defaults to "li".
+ *          rowSelector: "li",
  *
  *          // You may have some menu rows that aren't submenus and therefore
  *          // shouldn't ever need to "activate." If so, filter submenu rows w/
@@ -67,7 +67,10 @@
  *          submenuDirection: "right"
  *      });
  *
+ *
+ * A few performance improvements and release of jQuery dependency by the Wikia
  * https://github.com/Wikia/jQuery-menu-aim
+ *
  * forked from: https://github.com/kamens/jQuery-menu-aim
 */
 (function() {
