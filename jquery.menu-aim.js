@@ -67,7 +67,8 @@
  *          submenuDirection: "right"
  *      });
  *
- * https://github.com/kamens/jQuery-menu-aim
+ * https://github.com/Wikia/jQuery-menu-aim
+ * forked from: https://github.com/kamens/jQuery-menu-aim
 */
 (function($) {
 
@@ -80,26 +81,62 @@
         return this;
     };
 
-    function init(opts) {
-        var $menu = $(this),
-            activeRow = null,
-            mouseLocs = [],
-            lastDelayLoc = null,
-            timeoutId = null,
-            options = $.extend({
-                rowSelector: "> li",
-                submenuSelector: "*",
-                submenuDirection: "right",
-                tolerance: 75,  // bigger = more forgivey when entering submenu
-                enter: $.noop,
-                exit: $.noop,
-                activate: $.noop,
-                deactivate: $.noop,
-                exitMenu: $.noop
-            }, opts);
+    var utils = {
+        noop: function () {},
+        /**
+        * Returns only the elements filtered by the filterSelector
+        */
+        filter: function (elements, filterSelector) {
+            var elementsCnt, elementNo, nodeList, nodeListCnt, nodeNo, result;
 
-        var MOUSE_LOCS_TRACKED = 3,  // number of past mouse locations to track
-            DELAY = 300;  // ms delay when user appears to be entering submenu
+            result = [];
+            elementsCnt = elements.length;
+
+            for (elementNo = 0; elementNo < elementsCnt; ++elementNo) {
+                if (!elements[elementNo] || !elements[elementNo].parentNode) {
+                    continue;
+                }
+
+                nodeList = elements[elementNo].parentNode.querySelectorAll( filterSelector );
+                nodeListCnt = nodeList.length;
+
+                for (nodeNo = 0; nodeNo < nodeListCnt; ++nodeNo) {
+                    if (nodeList[nodeNo] !== elements[elementNo]) {
+                        continue;
+                    }
+
+                    result.push (elements[elementNo]);
+                }
+            }
+
+            return result;
+        }
+    };
+
+    function init(opts) {
+        var $menu, DELAY, MOUSE_LOCS_TRACKED, activeRow, mouseLocs, options, timeoutId;
+
+        $menu = $(this);
+        menu = this;
+        activeRow = null;
+        mouseLocs = [];
+        lastDelayLoc = null;
+        timeoutId = null;
+
+        options = $.extend({
+            rowSelector: "> li",
+            submenuSelector: "*",
+            submenuDirection: "right",
+            tolerance: 75,  // bigger = more forgivey when entering submenu
+            enter: utils.noop,
+            exit: utils.noop,
+            activate: utils.noop,
+            deactivate: utils.noop,
+            exitMenu: utils.noop
+        }, opts);
+
+        MOUSE_LOCS_TRACKED = 3;  // number of past mouse locations to track
+        DELAY = 300;  // ms delay when user appears to be entering submenu
 
         /**
          * Keep track of the last few locations of the mouse.
@@ -122,11 +159,8 @@
 
                 // If exitMenu is supplied and returns true, deactivate the
                 // currently active row on menu exit.
-                if (options.exitMenu(this)) {
-                    if (activeRow) {
-                        options.deactivate(activeRow);
-                    }
-
+                if (activeRow && options.exitMenu(this)) {
+                    options.deactivate(activeRow);
                     activeRow = null;
                 }
             };
@@ -142,8 +176,12 @@
 
                 options.enter(this);
                 possiblyActivate(this);
-            },
-            mouseleaveRow = function() {
+            };
+
+        /**
+         * Trigger a possible row deactivation whenever leaving a row.
+         */
+        var mouseleaveRow = function() {
                 options.exit(this);
             };
 
@@ -196,27 +234,28 @@
          * checking again to see if the row should be activated.
          */
         var activationDelay = function() {
-                if (!activeRow || !$(activeRow).is(options.submenuSelector)) {
+
+                if (!activeRow || utils.filter( [ activeRow ], options.submenuSelector ).length === 0 ) {
                     // If there is no other submenu row already active, then
                     // go ahead and activate immediately.
                     return 0;
                 }
 
-                var offset = $menu.offset(),
+                var offset = menu.getBoundingClientRect(),
                     upperLeft = {
                         x: offset.left,
                         y: offset.top - options.tolerance
                     },
                     upperRight = {
-                        x: offset.left + $menu.outerWidth(),
+                        x: offset.left + menu.offsetWidth,
                         y: upperLeft.y
                     },
                     lowerLeft = {
                         x: offset.left,
-                        y: offset.top + $menu.outerHeight() + options.tolerance
+                        y: offset.top + menu.offsetHeight + options.tolerance
                     },
                     lowerRight = {
-                        x: offset.left + $menu.outerWidth(),
+                        x: offset.left + menu.offsetWidth,
                         y: lowerLeft.y
                     },
                     loc = mouseLocs[mouseLocs.length - 1],
