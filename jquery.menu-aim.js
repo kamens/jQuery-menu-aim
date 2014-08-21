@@ -70,16 +70,13 @@
  * https://github.com/Wikia/jQuery-menu-aim
  * forked from: https://github.com/kamens/jQuery-menu-aim
 */
-(function($) {
+(function() {
 
-    $.fn.menuAim = function(opts) {
-        // Initialize menu-aim for all elements in jQuery collection
-        this.each(function() {
-            init.call(this, opts);
-        });
-
-        return this;
+    menuAim = function(menu, opts) {
+        init( menu, opts );
     };
+
+    window.menuAim = menuAim;
 
     var utils = {
         noop: function () {},
@@ -110,21 +107,34 @@
             }
 
             return result;
+        },
+
+        /**
+        * Returns first object extended by the properties of the second
+        */
+        extend: function (dst, src) {
+            var p;
+
+            for (p in src) {
+                if (src.hasOwnProperty (p)) {
+                    dst[p] = src[p];
+                }
+            }
+
+            return dst;
         }
     };
 
-    function init(opts) {
-        var $menu, DELAY, MOUSE_LOCS_TRACKED, activeRow, mouseLocs, options, timeoutId;
+    function init(menu, opts) {
+        var DELAY, MOUSE_LOCS_TRACKED, activeRow, mouseLocs, options, timeoutId;
 
-        $menu = $(this);
-        menu = this;
         activeRow = null;
         mouseLocs = [];
         lastDelayLoc = null;
         timeoutId = null;
 
-        options = $.extend({
-            rowSelector: "> li",
+        options = utils.extend({
+            rowSelector: "li",
             submenuSelector: "*",
             submenuDirection: "right",
             tolerance: 75,  // bigger = more forgivey when entering submenu
@@ -348,15 +358,17 @@
         /**
          * Hook up initial menu events
          */
-        $menu
-            .mouseleave(mouseleaveMenu)
-            .find(options.rowSelector)
-                .mouseenter(mouseenterRow)
-                .mouseleave(mouseleaveRow)
-                .click(clickRow);
+        menu.addEventListener( "mouseleave", mouseleaveMenu );
 
-        $(document).mousemove(mousemoveDocument);
+        var rows = menu.querySelectorAll( options.rowSelector );
 
+        for (i = 0, j = rows.length; i < j; ++i) {
+            rows[i].addEventListener( "mouseenter", mouseenterRow );
+            rows[i].addEventListener( "mouseleave", mouseleaveRow );
+            rows[i].addEventListener( "click", clickRow );
+        }
+
+        document.addEventListener( "mousemove", mousemoveDocument );
     };
-})(jQuery);
+})();
 
