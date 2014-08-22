@@ -1,5 +1,5 @@
 /**
- * menu-aim is a jQuery plugin for dropdown menus that can differentiate
+ * menu-aim is a module to handle dropdown menus that can differentiate
  * between a user trying hover over a dropdown item vs trying to navigate into
  * a submenu's contents.
  *
@@ -69,7 +69,8 @@
  *
  *
  * A few performance improvements and release of jQuery dependency by the Wikia
- * https://github.com/Wikia/jQuery-menu-aim
+ * https://github.com/Wikia/js-menu-aim
+ * git@github.com:Wikia/js-menu-aim.git
  *
  * forked from: https://github.com/kamens/jQuery-menu-aim
  *
@@ -77,8 +78,9 @@
 */
 (function() {
     menuAimModule = function(menu, opts) {
-        var DELAY, MOUSE_LOCS_TRACKED, activeRow, mouseLocs, options, timeoutId, utils, mousemoveDocument, mouseleaveMenu,
-        mouseenterRow, mouseleaveRow, clickRow, activate, possiblyActivate, activationDelay;
+        var DELAY, MOUSE_LOCS_TRACKED,
+        activeRow, mouseLocs, options, timeoutId, utils,
+        activate, activationdelay, clickrow, mouseenterrow, mouseleavemenu, mouseleaverow, mousemovedocument, possiblyactivate;
 
         /**
          * Additional functions to help module to work.
