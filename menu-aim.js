@@ -72,6 +72,8 @@
  * https://github.com/Wikia/jQuery-menu-aim
  *
  * forked from: https://github.com/kamens/jQuery-menu-aim
+ *
+ * Works on IE9+ (because of addEventListener...)
 */
 (function() {
     menuAimModule = function(menu, opts) {
