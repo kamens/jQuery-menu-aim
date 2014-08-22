@@ -81,9 +81,7 @@ _Play with the above example full of fun monkey pictures by opening example/exam
 * A few performance improvements and release of jQuery dependency by the [Wikia](http://www.wikia.com)
 * [https://github.com/Wikia/js-menu-aim](https://github.com/Wikia/js-menu-aim)
 * git@github.com:Wikia/js-menu-aim.git
-*
 * forked from: [https://github.com/kamens/jQuery-menu-aim](https://github.com/kamens/jQuery-menu-aim)
-*
 * Works on IE9+ (because of addEventListener...)
 
 
