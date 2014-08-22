@@ -1,7 +1,7 @@
 jQuery-menu-aim
 ===============
 
-menu-aim is a jQuery plugin for dropdown menus that can differentiate
+menu-aim is a module to handle dropdown menus that can differentiate
 between a user trying hover over a dropdown item vs trying to navigate into
 a submenu's contents.
 
