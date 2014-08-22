@@ -77,7 +77,7 @@ Check out example/example.html -- it has [a working dropdown for you to play wit
 ![Example screenshot](https://raw.github.com/kamens/jQuery-menu-aim/master/example.png)<br>
 _Play with the above example full of fun monkey pictures by opening example/example.html after downloading the repo._
 
-*
+
 * A few performance improvements and release of jQuery dependency by the [Wikia](http://www.wikia.com)
 * [https://github.com/Wikia/js-menu-aim](https://github.com/Wikia/js-menu-aim)
 * git@github.com:Wikia/js-menu-aim.git
@@ -85,7 +85,7 @@ _Play with the above example full of fun monkey pictures by opening example/exam
 * forked from: [https://github.com/kamens/jQuery-menu-aim](https://github.com/kamens/jQuery-menu-aim)
 *
 * Works on IE9+ (because of addEventListener...)
-*
+
 
 ## FAQ
 
