@@ -120,15 +120,13 @@
                     clearTimeout(timeoutId);
                 }
 
-                // If exitMenu is supplied and returns true, deactivate the
-                // currently active row on menu exit.
-                if (options.exitMenu(this)) {
-                    if (activeRow) {
-                        options.deactivate(activeRow);
-                    }
-
-                    activeRow = null;
+                options.exitMenu(this);
+                // Deactivate the currently active row on menu exit.
+                if (activeRow) {
+                    options.deactivate(activeRow);
                 }
+
+                activeRow = null;
             };
 
         /**
