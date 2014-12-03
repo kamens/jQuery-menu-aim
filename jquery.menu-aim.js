@@ -316,6 +316,15 @@
                 .mouseleave(mouseleaveRow)
                 .click(clickRow);
 
+         $menu.bind('DOMNodeInserted', function(e) {
+              var $newEl = $(e.target);
+              if ($newEl.is(options.rowSelector)) {
+                  $newEl.mouseenter(mouseenterRow)
+                      .mouseleave(mouseleaveRow)
+                      .click(clickRow);
+              }
+         });
+
         $(document).mousemove(mousemoveDocument);
 
     };
