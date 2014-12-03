@@ -205,7 +205,7 @@
                 var offset = $menu.offset(),
                     upperLeft = {
                         x: offset.left,
-                        y: offset.top - options.tolerance
+                        y: offset.top
                     },
                     upperRight = {
                         x: offset.left + $menu.outerWidth(),
@@ -213,7 +213,7 @@
                     },
                     lowerLeft = {
                         x: offset.left,
-                        y: offset.top + $menu.outerHeight() + options.tolerance
+                        y: offset.top + $menu.outerHeight()
                     },
                     lowerRight = {
                         x: offset.left + $menu.outerWidth(),
@@ -228,6 +228,21 @@
 
                 if (!prevLoc) {
                     prevLoc = loc;
+                }
+
+                // Adjust the corner points to enable tolerance.
+                if (options.submenuDirection == "right") {
+                    upperRight.y -= options.tolerance;
+                    lowerRight.y += options.tolerance;
+                } else if (options.submenuDirection == "left") {
+                    upperLeft.y -= options.tolerance;
+                    lowerLeft.y += options.tolerance;
+                } else if (options.submenuDirection == "above") {
+                    upperLeft.x -= options.tolerance;
+                    upperRight.x += options.tolerance;
+                } else if (options.submenuDirection == "below") {
+                    lowerLeft.x -= options.tolerance;
+                    lowerRight.x += options.tolerance;
                 }
 
                 if (prevLoc.x < offset.left || prevLoc.x > lowerRight.x ||
