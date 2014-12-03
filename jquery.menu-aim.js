@@ -62,9 +62,18 @@
  *          // this selector. Defaults to "*" (all elements).
  *          submenuSelector: "*",
  *
+ *           // What element wraps the submenu you want show on hover?
+ *          // It's useful to know because then code can detect if hovered element has one and if not, no delay will
+ *          // be applied to activate next menu item. Defaults to "*" (all elements).
+ *          submenuWrap: "*",
+ *
  *          // Direction the submenu opens relative to the main menu. Can be
  *          // left, right, above, or below. Defaults to "right".
  *          submenuDirection: "right"
+ 
+ *          // Close submenu if mouse moves out of menu.
+ *          exitOnMouseOut: false
+
  *      });
  *
  * https://github.com/kamens/jQuery-menu-aim
@@ -89,13 +98,15 @@
             options = $.extend({
                 rowSelector: "> li",
                 submenuSelector: "*",
+	            submenuWrap: '*',
                 submenuDirection: "right",
                 tolerance: 75,  // bigger = more forgivey when entering submenu
                 enter: $.noop,
                 exit: $.noop,
                 activate: $.noop,
                 deactivate: $.noop,
-                exitMenu: $.noop
+                exitMenu: $.noop,
+				exitOnMouseOut: false
             }, opts);
 
         var MOUSE_LOCS_TRACKED = 3,  // number of past mouse locations to track
@@ -122,7 +133,7 @@
 
                 // If exitMenu is supplied and returns true, deactivate the
                 // currently active row on menu exit.
-                if (options.exitMenu(this)) {
+                if (options.exitMenu(this) || options.exitOnMouseOut) {
                     if (activeRow) {
                         options.deactivate(activeRow);
                     }
@@ -158,17 +169,24 @@
          * Activate a menu row.
          */
         var activate = function(row) {
-                if (row == activeRow) {
-                    return;
-                }
+            if (row == activeRow) {
+                return;
+            }
 
-                if (activeRow) {
-                    options.deactivate(activeRow);
-                }
+            if (activeRow) {
+                options.deactivate(activeRow);
+            }
 
-                options.activate(row);
-                activeRow = row;
-            };
+            options.activate(row);
+            activeRow = row;
+
+	        //check if we have subemenu. if not we can activate next menu item instantly.
+	        if ($(row).find(options.submenuWrap).length === 0) {
+		        wasRowEmpty = false;
+	        } else {
+		        wasRowEmpty = true;
+	        }
+        };
 
         /**
          * Possibly activate a menu row. If mouse movement indicates that we
@@ -178,7 +196,7 @@
         var possiblyActivate = function(row) {
                 var delay = activationDelay();
 
-                if (delay) {
+                if (delay && wasRowEmpty) {
                     timeoutId = setTimeout(function() {
                         possiblyActivate(row);
                     }, delay);
