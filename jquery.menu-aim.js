@@ -39,11 +39,13 @@
  *
  *      .menuAim({
  *          // Function to call when a row is purposefully activated. Use this
- *          // to show a submenu's content for the activated row.
- *          activate: function() {},
+ *        	// to show a submenu's content for the activated row.
+ *        	// previouslyActivatedRow parameter can be null if no row was active before.
+ *        	activate: function(activatedRow, previouslyActivatedRow) {},
  *
- *          // Function to call when a row is deactivated.
- *          deactivate: function() {},
+ *        	// Function to call when a row is deactivated.
+ *        	// postActivatedRow parameter can be null if mouse cursor exited menu.
+ *        	deactivate: function(deactivatedRow, postActivatedRow) {},
  *
  *          // Function to call when mouse enters a menu row. Entering a row
  *          // does not mean the row has been activated, as the user may be
@@ -64,7 +66,12 @@
  *
  *          // Direction the submenu opens relative to the main menu. Can be
  *          // left, right, above, or below. Defaults to "right".
- *          submenuDirection: "right"
+ *          submenuDirection: "right",
+ *
+ *			// This option adds a delay (in milliseconds) before really opening
+ *			// submenu to prevent flickering submenus when moving cursor quickly
+ *			// between rows. Default is 0
+ *			activationDelay: 0
  *      });
  *
  * https://github.com/kamens/jQuery-menu-aim
@@ -86,6 +93,7 @@
             mouseLocs = [],
             lastDelayLoc = null,
             timeoutId = null,
+            activationTimeoutId = undefined,
             options = $.extend({
                 rowSelector: "> li",
                 submenuSelector: "*",
@@ -95,7 +103,8 @@
                 exit: $.noop,
                 activate: $.noop,
                 deactivate: $.noop,
-                exitMenu: $.noop
+                exitMenu: $.noop,
+                activationDelay: 0
             }, opts);
 
         var MOUSE_LOCS_TRACKED = 3,  // number of past mouse locations to track
@@ -124,7 +133,7 @@
                 // currently active row on menu exit.
                 if (options.exitMenu(this)) {
                     if (activeRow) {
-                        options.deactivate(activeRow);
+                        options.deactivate(activeRow, null);
                     }
 
                     activeRow = null;
@@ -144,6 +153,11 @@
                 possiblyActivate(this);
             },
             mouseleaveRow = function() {
+                if(activationTimeoutId){ 
+                	clearTimeout(activationTimeoutId);
+                	activationTimeoutId = undefined;
+                }
+                
                 options.exit(this);
             };
 
@@ -161,13 +175,24 @@
                 if (row == activeRow) {
                     return;
                 }
-
-                if (activeRow) {
-                    options.deactivate(activeRow);
-                }
-
-                options.activate(row);
-                activeRow = row;
+				
+				if(options.activationDelay > 0) {
+					if(activationTimeoutId) {
+						clearTimeout(activationTimeoutId);
+					}
+					activationTimeoutId = setTimeout(reallyActivate, options.activationDelay);
+		        } else {
+		        	reallyActivate();
+		        }
+		        
+		        function reallyActivate() {
+		        	if (activeRow) {
+	                    options.deactivate(activeRow, row);
+	                }
+	
+	                options.activate(row, activeRow);
+	                activeRow = row;
+		        }
             };
 
         /**

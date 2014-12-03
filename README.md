@@ -30,10 +30,12 @@ the relevant row's HTML element as the execution context ('this'):
      .menuAim({
          // Function to call when a row is purposefully activated. Use this
          // to show a submenu's content for the activated row.
-         activate: function() {},
+         // previouslyActivatedRow parameter can be null if no row was active before.
+         activate: function(activatedRow, previouslyActivatedRow) {},
 
          // Function to call when a row is deactivated.
-         deactivate: function() {},
+         // postActivatedRow parameter can be null if mouse cursor exited menu.
+         deactivate: function(deactivatedRow, postActivatedRow) {},
 
          // Function to call when mouse enters a menu row. Entering a row
          // does not mean the row has been activated, as the user may be
@@ -63,7 +65,12 @@ the relevant row's HTML element as the execution context ('this'):
          // controls which direction is "forgiving" as the user moves their
          // cursor from the main menu into the submenu. Can be one of "right",
          // "left", "above", or "below". Defaults to "right".
-         submenuDirection: "right"
+         submenuDirection: "right",
+         
+         // This option adds a delay (in milliseconds) before really opening
+         // submenu to prevent flickering submenus when moving cursor quickly
+         // between rows. Default is 0
+         activationDelay: 0
      });
 
 menu-aim assumes that you are using a menu with submenus that expand
