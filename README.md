@@ -81,4 +81,5 @@ _Play with the above example full of fun monkey pictures by opening example/exam
 
 1. What's the license? [MIT](http://en.wikipedia.org/wiki/MIT_License).
 2. Does it support horizontal menus or submenus that open to the left? Yup. Check out the submenuDirection option above.
-3. I'm not nearly bored enough. Got anything else? [Read about this plugin's creation](http://bjk5.com/post/44698559168/breaking-down-amazons-mega-dropdown).
+3. I work at a big company that requires a version number on this third party code before I can use it. Do you have a version number? Sure, current version: 1.1
+4. I'm not nearly bored enough. Got anything else? [Read about this plugin's creation](http://bjk5.com/post/44698559168/breaking-down-amazons-mega-dropdown).
