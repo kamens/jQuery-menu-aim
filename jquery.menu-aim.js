@@ -166,6 +166,11 @@
                     options.deactivate(activeRow);
                 }
 
+                if (! $(row).is(options.submenuSelector)){
+                    activeRow = null;
+                    return;
+                }
+                
                 options.activate(row);
                 activeRow = row;
             };
