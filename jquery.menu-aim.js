@@ -86,10 +86,12 @@
             mouseLocs = [],
             lastDelayLoc = null,
             timeoutId = null,
+            leaveMenuTimeoutId = null,
             options = $.extend({
                 rowSelector: "> li",
                 submenuSelector: "*",
                 submenuDirection: "right",
+                submenuMaxHeight: $(this).outerHeight(), // submenu maximum height
                 tolerance: 75,  // bigger = more forgivey when entering submenu
                 enter: $.noop,
                 exit: $.noop,
@@ -116,6 +118,13 @@
          * Cancel possible row activations when leaving the menu entirely
          */
         var mouseleaveMenu = function() {
+            // don't deactivate if mouse is moving to submenu, delay and check again later
+            var delay = activationDelay();
+                if(delay){
+                    leaveMenuTimeoutId = setTimeout(function() {
+                        mouseleaveMenu();
+                    }, delay);                                     
+                } else {
                 if (timeoutId) {
                     clearTimeout(timeoutId);
                 }
@@ -127,8 +136,12 @@
                         options.deactivate(activeRow);
                     }
 
-                    activeRow = null;
+                        activeRow = null;
+                    }
+
                 }
+
+
             };
 
         /**
@@ -138,6 +151,9 @@
                 if (timeoutId) {
                     // Cancel any previous activation delays
                     clearTimeout(timeoutId);
+                }
+                if(leaveMenuTimeoutId) {
+                    clearTimeout(leaveMenuTimeoutId);
                 }
 
                 options.enter(this);
@@ -208,7 +224,7 @@
                         y: offset.top - options.tolerance
                     },
                     upperRight = {
-                        x: offset.left + $menu.outerWidth(),
+                        x: offset.left + $menu.find(options.rowSelector).outerWidth(),
                         y: upperLeft.y
                     },
                     lowerLeft = {
@@ -216,8 +232,8 @@
                         y: offset.top + $menu.outerHeight() + options.tolerance
                     },
                     lowerRight = {
-                        x: offset.left + $menu.outerWidth(),
-                        y: lowerLeft.y
+                        x: upperRight.x,
+                        y: offset.top + options.submenuMaxHeight + options.tolerance
                     },
                     loc = mouseLocs[mouseLocs.length - 1],
                     prevLoc = mouseLocs[0];
