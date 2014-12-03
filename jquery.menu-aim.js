@@ -69,6 +69,7 @@
  *
  * https://github.com/kamens/jQuery-menu-aim
 */
+
 (function($) {
 
     $.fn.menuAim = function(opts) {
