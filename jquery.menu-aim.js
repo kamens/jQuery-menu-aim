@@ -120,6 +120,8 @@
                     clearTimeout(timeoutId);
                 }
 
+                possiblyDeactivate(this);
+
                 // If exitMenu is supplied and returns true, deactivate the
                 // currently active row on menu exit.
                 if (options.exitMenu(this)) {
@@ -171,6 +173,16 @@
             };
 
         /**
+         * Activate a menu row.
+         */
+        var deactivate = function() {
+                if (activeRow) {
+                    options.deactivate(activeRow);
+                    activeRow = null;
+                }
+            };
+
+        /**
          * Possibly activate a menu row. If mouse movement indicates that we
          * shouldn't activate yet because user may be trying to enter
          * a submenu's content, then delay and check again later.
@@ -184,6 +196,23 @@
                     }, delay);
                 } else {
                     activate(row);
+                }
+            };
+
+        /**
+         * Possibly deactivate a menu row. When moving outside main menu
+         * track if mouse movement is towards submenu, if it is -
+         * delay and check again later.
+         */
+        var possiblyDeactivate = function(row) {
+                var delay = activationDelay();
+
+                if (delay) {
+                    timeoutId = setTimeout(function() {
+                        possiblyDeactivate(row);
+                    }, delay)
+                } else {
+                    deactivate(row);
                 }
             };
 
