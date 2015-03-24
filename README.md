@@ -7,7 +7,7 @@ a submenu's contents.
 
 ## Installation
 ```
-bower install jquery.menuaim
+bower install jquery.menuaim --save
 ```
 
 ## Demo
