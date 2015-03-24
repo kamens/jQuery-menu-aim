@@ -5,6 +5,12 @@ menu-aim is a jQuery plugin for dropdown menus that can differentiate
 between a user trying hover over a dropdown item vs trying to navigate into
 a submenu's contents.
 
+## Installation
+```
+bower install jquery.menuaim --save
+```
+
+## Demo
 [Try a demo.](https://rawgithub.com/kamens/jQuery-menu-aim/master/example/example.html)
 
 ![Amazon screenshot](https://raw.github.com/kamens/jQuery-menu-aim/master/amazon.png)
@@ -63,7 +69,10 @@ the relevant row's HTML element as the execution context ('this'):
          // controls which direction is "forgiving" as the user moves their
          // cursor from the main menu into the submenu. Can be one of "right",
          // "left", "above", or "below". Defaults to "right".
-         submenuDirection: "right"
+         submenuDirection: "right",
+         
+         // ms delay when user appears to be entering submenu
+         delay = 300
      });
 
 menu-aim assumes that you are using a menu with submenus that expand

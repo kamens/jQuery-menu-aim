@@ -1,0 +1,12 @@
+{
+  "name": "jquery.menu-aim",
+  "version": "1.1.0",
+  "main": "jquery.menu-aim.js",
+  "dependencies": {
+    "jquery": "*"
+  },
+  "ignore": [
+    "example",
+    "*.png"
+  ]
+}
