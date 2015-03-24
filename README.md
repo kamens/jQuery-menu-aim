@@ -10,6 +10,7 @@ a submenu's contents.
 bower install jquery.menuaim
 ```
 
+## Demo
 [Try a demo.](https://rawgithub.com/kamens/jQuery-menu-aim/master/example/example.html)
 
 ![Amazon screenshot](https://raw.github.com/kamens/jQuery-menu-aim/master/amazon.png)
