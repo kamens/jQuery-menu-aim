@@ -214,6 +214,10 @@
       </div>
       <main>
         <p>Hello World</p>
+
+        <p><a id="click-switch" href="#">Switch submenu open trigger to click</a></p>
+        <p><a id="hover-switch" href="#">Switch submenu open trigger to hover</a></p>
+
       </main>
     </div>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -221,7 +225,9 @@
     <script>
       $(function() {
 
-        $('#cbp-hrmenu > ul').menuAim({
+        // Main setup
+
+        var top_menu = $('#cbp-hrmenu > ul').menuAim({
           triggerEvent:       'click',
           activateCallback:   activate,
           deactivateCallback: deactivate,
@@ -230,13 +236,23 @@
           activationDelay:    200
         });
 
-        function activate( row ) {
+        function activate(row) {
           $(row).addClass( 'cbp-hropen' );
         }
 
-        function deactivate( row ) {
+        function deactivate(row) {
           $(row).removeClass( 'cbp-hropen' );
         }
+
+        // Switching triggers
+
+        $('#click-switch').on('click', function(){
+          top_menu.menuAim('switchToClick');
+        });
+
+        $('#hover-switch').on('click', function(){
+          top_menu.menuAim('switchToHover');
+        });
 
       });
     </script>

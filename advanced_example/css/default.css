@@ -24,8 +24,8 @@ body, html { font-size: 100%;   padding: 0; margin: 0;}
 }
 
 body {
-    font-family: 'Lato', Calibri, Arial, sans-serif;
-    color: #47a3da;
+  font-family: 'Lato', Calibri, Arial, sans-serif;
+  color: #47a3da;
 }
 
 a {
@@ -43,6 +43,19 @@ a:hover {
   max-width: 70em;
   margin: 0 auto;
   padding: 1em 1.5em;
+}
+
+.container > main a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  background-color: #47a3da;
+  padding: 5px;
+}
+
+.container > main a:hover {
+  /*color: #999;*/
+  background-color: #999;
 }
 
 .container > header h1 {
