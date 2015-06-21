@@ -38,6 +38,9 @@
  * the relevant row's HTML element as the execution context ('this'):
  *
  *      .menuAim({
+ *          // A means of activating submenu - either hover or click or both
+ *          triggerEvent: 'click',
+ *
  *          // Function to call when a row is purposefully activated. Use this
  *          // to show a submenu's content for the activated row.
  *          activate: function() {},
@@ -69,275 +72,430 @@
  *
  * https://github.com/kamens/jQuery-menu-aim
 */
-(function($) {
+;(function ( $, window, document, undefined ) {
 
-    $.fn.menuAim = function(opts) {
-        // Initialize menu-aim for all elements in jQuery collection
-        this.each(function() {
-            init.call(this, opts);
-        });
+  var pluginName  = 'menuAim',
+      defaults    = {
+        triggerEvent:     "hover",
+        rowSelector:      "> li",
+        handle:           "> a",
+        submenuSelector:  "*",
+        submenuDirection: "right",
+        tolerance:        75,   // bigger = more forgivey when entering submenu
+        activationDelay:  300,  // delay for first submenu opening
+        mouseLocsTracked: 3,    // number of past mouse locations to track
+        defaultDelay:     300,  // ms delay when user appears to be entering submenu
+        enter:            $.noop,
+        exit:             $.noop,
+        activate:         $.noop,
+        deactivate:       $.noop,
+        exitMenu:         $.noop
+      };
 
-        return this;
-    };
+  function Plugin( el, options ) {
+    this.el = el;
+    this.options = $.extend( {}, defaults, options);
 
-    function init(opts) {
-        var $menu = $(this),
-            activeRow = null,
-            mouseLocs = [],
-            lastDelayLoc = null,
-            timeoutId = null,
-            options = $.extend({
-                rowSelector: "> li",
-                submenuSelector: "*",
-                submenuDirection: "right",
-                tolerance: 75,  // bigger = more forgivey when entering submenu
-                enter: $.noop,
-                exit: $.noop,
-                activate: $.noop,
-                deactivate: $.noop,
-                exitMenu: $.noop
-            }, opts);
+    this._defaults = defaults;
+    this._name = pluginName;
 
-        var MOUSE_LOCS_TRACKED = 3,  // number of past mouse locations to track
-            DELAY = 300;  // ms delay when user appears to be entering submenu
+    this.init();
+  }
 
-        /**
-         * Keep track of the last few locations of the mouse.
-         */
-        var mousemoveDocument = function(e) {
-                mouseLocs.push({x: e.pageX, y: e.pageY});
+  Plugin.prototype = {
 
-                if (mouseLocs.length > MOUSE_LOCS_TRACKED) {
-                    mouseLocs.shift();
-                }
-            };
+    init: function () {
+      this.activeRow    = null,
+      this.mouseLocs    = [],
+      this.lastDelayLoc = null,
+      this.timeoutId    = null,
+      this.openDelayId  = null,
+      this.isOnClick    = $.inArray(this.options.triggerEvent, ['both', 'click']) > -1,
+      this.isOnHover    = $.inArray(this.options.triggerEvent, ['both', 'hover']) > -1;
 
-        /**
-         * Cancel possible row activations when leaving the menu entirely
-         */
-        var mouseleaveMenu = function() {
-                if (timeoutId) {
-                    clearTimeout(timeoutId);
-                }
+      /**
+       * Hook up initial menu events
+       */
+      if (this.isOnHover) {
+        this.hoverTriggerOn();
+      }
 
-                possiblyDeactivate(this);
-                options.exitMenu(this);
-            };
+      if (this.isOnClick) {
+        this.clickTriggerOn();
+      }
+    },
 
-        /**
-         * Trigger a possible row activation whenever entering a new row.
-         */
-        var mouseenterRow = function() {
-                if (timeoutId) {
-                    // Cancel any previous activation delays
-                    clearTimeout(timeoutId);
-                }
+    /**
+     * Keep track of the last few locations of the mouse.
+     */
+    mousemoveDocument: function(e) {
+      obj = e.data.obj;
+      obj.mouseLocs.push({x: e.pageX, y: e.pageY});
 
-                options.enter(this);
-                possiblyActivate(this);
-            },
-            mouseleaveRow = function() {
-                options.exit(this);
-            };
+      if (obj.mouseLocs.length > obj.options.mouseLocsTracked) {
+        obj.mouseLocs.shift();
+      }
+    },
 
-        /*
-         * Immediately activate a row if the user clicks on it.
-         */
-        var clickRow = function() {
-                activate(this);
-            };
+    /**
+     * Cancel possible row activations when leaving the menu entirely
+     */
+    mouseleaveMenu: function(e) {
+      obj = e.data.obj;
+      if (obj.timeoutId) {
+        clearTimeout(obj.timeoutId);
+      }
 
-        /**
-         * Activate a menu row.
-         */
-        var activate = function(row) {
-                if (row == activeRow) {
-                    return;
-                }
+      obj.possiblyDeactivate(this);
+      obj.options.exitMenu(this);
+    },
 
-                if (activeRow) {
-                    options.deactivate(activeRow);
-                }
+    /**
+     * Trigger a possible row activation whenever entering a new row.
+     */
+    mouseenterRow: function(e) {
+      obj = e.data.obj;
+      if (obj.timeoutId) {
+        // Cancel any previous activation delays
+        clearTimeout(obj.timeoutId);
+      }
 
-                options.activate(row);
-                activeRow = row;
-            };
+      obj.options.enter(this);
+      obj.possiblyActivate(this);
+    },
 
-        /**
-         * Activate a menu row.
-         */
-        var deactivate = function() {
-                if (activeRow) {
-                    options.deactivate(activeRow);
-                    activeRow = null;
-                }
-            };
+    mouseleaveRow: function(e) {
+      e.data.obj.options.exit(this);
+    },
 
-        /**
-         * Possibly activate a menu row. If mouse movement indicates that we
-         * shouldn't activate yet because user may be trying to enter
-         * a submenu's content, then delay and check again later.
-         */
-        var possiblyActivate = function(row) {
-                var delay = activationDelay();
+    /*
+     * Immediately activate a row if the user clicks on it.
+     */
+    clickRow: function(e) {
+      obj = e.data.obj;
+      obj.activate(this);
 
-                if (delay) {
-                    timeoutId = setTimeout(function() {
-                        possiblyActivate(row);
-                    }, delay);
-                } else {
-                    activate(row);
-                }
-            };
+      // bind close event when submenu content is rendered
+      $(obj.el)
+        .find(obj.options.rowSelector)
+          .find(obj.options.handle)
+            .on('click', { this: obj }, obj.clickRowHandle);
+    },
 
-        /**
-         * Possibly deactivate a menu row. When moving outside main menu
-         * track if mouse movement is towards submenu, if it is -
-         * delay and check again later.
-         */
-        var possiblyDeactivate = function(row) {
-                var delay = activationDelay();
 
-                if (delay) {
-                    timeoutId = setTimeout(function() {
-                        possiblyDeactivate(row);
-                    }, delay)
-                } else {
-                    deactivate(row);
-                }
-            };
+    /*
+     * Close already opened submenu
+     */
+    clickRowHandle: function(e) {
+      if ($(this).closest('li').hasClass('open')) {
+        e.data.this.deactivate();
+        e.stopPropagation();
+      }
+    },
 
-        /**
-         * Return the amount of time that should be used as a delay before the
-         * currently hovered row is activated.
-         *
-         * Returns 0 if the activation should happen immediately. Otherwise,
-         * returns the number of milliseconds that should be delayed before
-         * checking again to see if the row should be activated.
-         */
-        var activationDelay = function() {
-                if (!activeRow || !$(activeRow).is(options.submenuSelector)) {
-                    // If there is no other submenu row already active, then
-                    // go ahead and activate immediately.
-                    return 0;
-                }
+    /**
+     * Activate a menu row with possible delay
+     */
+    activate: function(row) {
+      var that = this;
+      if (row == this.activeRow) {
+        return;
+      }
+      if (parseInt(this.options.activationDelay, 0) > 0 && this.isOnHover) {
+        if (this.activeRow) {
+          this.activateWithoutDelay(row);
+        } else {
+          this.openDelayId = setTimeout(function() {
+            that.activateWithoutDelay(row);
+          },
+          this.options.activationDelay);
+        }
+      } else {
+        this.activateWithoutDelay(row);
+      }
 
-                var offset = $menu.offset(),
-                    upperLeft = {
-                        x: offset.left,
-                        y: offset.top - options.tolerance
-                    },
-                    upperRight = {
-                        x: offset.left + $menu.outerWidth(),
-                        y: upperLeft.y
-                    },
-                    lowerLeft = {
-                        x: offset.left,
-                        y: offset.top + $menu.outerHeight() + options.tolerance
-                    },
-                    lowerRight = {
-                        x: offset.left + $menu.outerWidth(),
-                        y: lowerLeft.y
-                    },
-                    loc = mouseLocs[mouseLocs.length - 1],
-                    prevLoc = mouseLocs[0];
+    },
 
-                if (!loc) {
-                    return 0;
-                }
+    activateWithoutDelay: function(row) {
+      if (this.activeRow) {
+        this.options.deactivate(this.activeRow);
+      }
+      this.options.activate(row);
+      this.activeRow = row;
+    },
 
-                if (!prevLoc) {
-                    prevLoc = loc;
-                }
+    deactivate: function() {
+      if (this.openDelayId) {
+        clearTimeout(this.openDelayId);
+      }
+      if (this.activeRow) {
+        this.options.deactivate(this.activeRow);
+        this.activeRow = null;
+      }
+    },
 
-                if (prevLoc.x < offset.left || prevLoc.x > lowerRight.x ||
-                    prevLoc.y < offset.top || prevLoc.y > lowerRight.y) {
-                    // If the previous mouse location was outside of the entire
-                    // menu's bounds, immediately activate.
-                    return 0;
-                }
+    /**
+     * Possibly activate a menu row. If mouse movement indicates that we
+     * shouldn't activate yet because user may be trying to enter
+     * a submenu's content, then delay and check again later.
+     */
+    possiblyActivate: function(row) {
+      var delay = this.activationDelay(),
+          that  = this;
 
-                if (lastDelayLoc &&
-                        loc.x == lastDelayLoc.x && loc.y == lastDelayLoc.y) {
-                    // If the mouse hasn't moved since the last time we checked
-                    // for activation status, immediately activate.
-                    return 0;
-                }
+      if (delay) {
+        this.timeoutId = setTimeout(function() {
+          that.possiblyActivate(row);
+        }, delay);
+      } else {
+        this.activate(row);
+      }
+    },
 
-                // Detect if the user is moving towards the currently activated
-                // submenu.
-                //
-                // If the mouse is heading relatively clearly towards
-                // the submenu's content, we should wait and give the user more
-                // time before activating a new row. If the mouse is heading
-                // elsewhere, we can immediately activate a new row.
-                //
-                // We detect this by calculating the slope formed between the
-                // current mouse location and the upper/lower right points of
-                // the menu. We do the same for the previous mouse location.
-                // If the current mouse location's slopes are
-                // increasing/decreasing appropriately compared to the
-                // previous's, we know the user is moving toward the submenu.
-                //
-                // Note that since the y-axis increases as the cursor moves
-                // down the screen, we are looking for the slope between the
-                // cursor and the upper right corner to decrease over time, not
-                // increase (somewhat counterintuitively).
-                function slope(a, b) {
-                    return (b.y - a.y) / (b.x - a.x);
-                };
+    possiblyDeactivate: function(row) {
+      var delay = this.activationDelay(),
+          that  = this;
 
-                var decreasingCorner = upperRight,
-                    increasingCorner = lowerRight;
+      if (delay) {
+        this.timeoutId = setTimeout(function() {
+          that.possiblyDeactivate(row);
+        }, delay)
+      } else {
+        this.options.deactivate(row);
+      }
+    },
 
-                // Our expectations for decreasing or increasing slope values
-                // depends on which direction the submenu opens relative to the
-                // main menu. By default, if the menu opens on the right, we
-                // expect the slope between the cursor and the upper right
-                // corner to decrease over time, as explained above. If the
-                // submenu opens in a different direction, we change our slope
-                // expectations.
-                if (options.submenuDirection == "left") {
-                    decreasingCorner = lowerLeft;
-                    increasingCorner = upperLeft;
-                } else if (options.submenuDirection == "below") {
-                    decreasingCorner = lowerRight;
-                    increasingCorner = lowerLeft;
-                } else if (options.submenuDirection == "above") {
-                    decreasingCorner = upperLeft;
-                    increasingCorner = upperRight;
-                }
+    /**
+     * Return the amount of time that should be used as a delay before the
+     * currently hovered row is activated.
+     *
+     * Returns 0 if the activation should happen immediately. Otherwise,
+     * returns the number of milliseconds that should be delayed before
+     * checking again to see if the row should be activated.
+     */
+    activationDelay: function() {
+      if (!this.activeRow || !$(this.activeRow).is(this.options.submenuSelector)) {
+        // If there is no other submenu row already active, then
+        // go ahead and activate immediately.
+        return 0;
+      }
 
-                var decreasingSlope = slope(loc, decreasingCorner),
-                    increasingSlope = slope(loc, increasingCorner),
-                    prevDecreasingSlope = slope(prevLoc, decreasingCorner),
-                    prevIncreasingSlope = slope(prevLoc, increasingCorner);
+      var offset = $(this.el).offset(),
+          upperLeft = {
+            x: offset.left,
+            y: offset.top - this.options.tolerance
+          },
+          upperRight = {
+            x: offset.left + $(this.el).outerWidth(),
+            y: upperLeft.y
+          },
+          lowerLeft = {
+            x: offset.left,
+            y: offset.top + $(this.el).outerHeight() + this.options.tolerance
+          },
+          lowerRight = {
+            x: offset.left + $(this.el).outerWidth(),
+            y: lowerLeft.y
+          },
+          loc = this.mouseLocs[this.mouseLocs.length - 1],
+          prevLoc = this.mouseLocs[0];
 
-                if (decreasingSlope < prevDecreasingSlope &&
-                        increasingSlope > prevIncreasingSlope) {
-                    // Mouse is moving from previous location towards the
-                    // currently activated submenu. Delay before activating a
-                    // new menu row, because user may be moving into submenu.
-                    lastDelayLoc = loc;
-                    return DELAY;
-                }
+      if (!loc) {
+        return 0;
+      }
 
-                lastDelayLoc = null;
-                return 0;
-            };
+      if (!prevLoc) {
+        prevLoc = loc;
+      }
 
-        /**
-         * Hook up initial menu events
-         */
-        $menu
-            .mouseleave(mouseleaveMenu)
-            .find(options.rowSelector)
-                .mouseenter(mouseenterRow)
-                .mouseleave(mouseleaveRow)
-                .click(clickRow);
+      if (prevLoc.x < offset.left || prevLoc.x > lowerRight.x ||
+          prevLoc.y < offset.top || prevLoc.y > lowerRight.y) {
+        // If the previous mouse location was outside of the entire
+        // menu's bounds, immediately activate.
+        return 0;
+      }
 
-        $(document).mousemove(mousemoveDocument);
+      if (this.lastDelayLoc && loc.x == this.lastDelayLoc.x && loc.y == this.lastDelayLoc.y) {
+        // If the mouse hasn't moved since the last time we checked
+        // for activation status, immediately activate.
+        return 0;
+      }
 
-    };
-})(jQuery);
+      // Detect if the user is moving towards the currently activated
+      // submenu.
+      //
+      // If the mouse is heading relatively clearly towards
+      // the submenu's content, we should wait and give the user more
+      // time before activating a new row. If the mouse is heading
+      // elsewhere, we can immediately activate a new row.
+      //
+      // We detect this by calculating the slope formed between the
+      // current mouse location and the upper/lower right points of
+      // the menu. We do the same for the previous mouse location.
+      // If the current mouse location's slopes are
+      // increasing/decreasing appropriately compared to the
+      // previous's, we know the user is moving toward the submenu.
+      //
+      // Note that since the y-axis increases as the cursor moves
+      // down the screen, we are looking for the slope between the
+      // cursor and the upper right corner to decrease over time, not
+      // increase (somewhat counterintuitively).
+      function slope(a, b) {
+        return (b.y - a.y) / (b.x - a.x);
+      };
 
+      var decreasingCorner = upperRight,
+          increasingCorner = lowerRight;
+
+      // Our expectations for decreasing or increasing slope values
+      // depends on which direction the submenu opens relative to the
+      // main menu. By default, if the menu opens on the right, we
+      // expect the slope between the cursor and the upper right
+      // corner to decrease over time, as explained above. If the
+      // submenu opens in a different direction, we change our slope
+      // expectations.
+      if (this.options.submenuDirection == "left") {
+        decreasingCorner = lowerLeft;
+        increasingCorner = upperLeft;
+      } else if (this.options.submenuDirection == "below") {
+        decreasingCorner = lowerRight;
+        increasingCorner = lowerLeft;
+      } else if (this.options.submenuDirection == "above") {
+        decreasingCorner = upperLeft;
+        increasingCorner = upperRight;
+      }
+
+      var decreasingSlope = slope(loc, decreasingCorner),
+          increasingSlope = slope(loc, increasingCorner),
+          prevDecreasingSlope = slope(prevLoc, decreasingCorner),
+          prevIncreasingSlope = slope(prevLoc, increasingCorner);
+
+      if (decreasingSlope < prevDecreasingSlope && increasingSlope > prevIncreasingSlope) {
+        // Mouse is moving from previous location towards the
+        // currently activated submenu. Delay before activating a
+        // new menu row, because user may be moving into submenu.
+        this.lastDelayLoc = loc;
+        return this.options.defaultDelay;
+      }
+
+      this.lastDelayLoc = null;
+      return 0;
+    },
+
+    // if the target isn't the container nor a descendant of the container
+    outsideMenuClick: function(e) {
+      if ($(this.el).not(e.target) && $(this.el).has(e.target).length === 0) {
+        e.data.options.deactivate();
+      }
+    },
+
+    hoverTriggerOn: function() {
+      $(this.el).on('mouseleave', { obj: this}, this.mouseleaveMenu )
+        .find(this.options.rowSelector)
+          .on('mouseenter', { obj: this}, this.mouseenterRow)
+          .on('mouseleave', { obj: this}, this.mouseleaveRow);
+      $(window).on('blur', { obj: this }, this.mouseleaveMenu);
+      $(document).on('mousemove', { obj: this }, this.mousemoveDocument);
+    },
+
+    hoverTriggerOff: function() {
+      $(this.el).off('mouseleave', this.mouseleaveMenu)
+        .find(this.options.rowSelector)
+          .off('mouseenter', this.mouseenterRow)
+          .off('mouseleave', this.mouseleaveRow)
+      $(window).off('blur', this.mouseleaveMenu);
+      $(document).off('mousemove', { obj: this }, this.mousemoveDocument);
+    },
+
+    clickTriggerOn: function() {
+      $(this.el).find(this.options.rowSelector)
+        .on('click', { obj: this }, this.clickRow);
+
+      // hide menu if clicked elsewere
+      $(document).on('click', { options: this.options }, this.outsideMenuClick);
+    },
+
+    clickTriggerOff: function() {
+      $(this.el)
+        .find(this.options.rowSelector)
+          .off('click', this.clickRow);
+      $(document).off('click', this.outsideMenuClick);
+    },
+
+    // Private methods start with underscore
+
+    // Public methods
+    switchToHover: function() {
+      this.clickTriggerOff();
+      this.hoverTriggerOn();
+    },
+
+    switchToClick: function() {
+      this.hoverTriggerOff();
+      this.clickTriggerOn();
+    }
+  };
+
+
+
+  // A lightweight plugin wrapper around the constructor,
+  // preventing against multiple instantiations and allowing any
+  // public function (ie. a function whose name doesn't start
+  // with an underscore) to be called via the jQuery plugin,
+  // e.g. $(element).defaultPluginName('functionName', arg1, arg2)
+  $.fn[pluginName] = function ( options ) {
+    var args = arguments;
+
+    // Is the first parameter an object (options), or was omitted,
+    // instantiate a new instance of the plugin.
+    if (options === undefined || typeof options === 'object') {
+      return this.each(function () {
+
+        // Only allow the plugin to be instantiated once,
+        // so we check that the element has no plugin instantiation yet
+        if (!$.data(this, 'plugin_' + pluginName)) {
+
+          // if it has no instance, create a new one,
+          // pass options to our plugin constructor,
+          // and store the plugin instance
+          // in the elements jQuery data object.
+          $.data(this, 'plugin_' + pluginName, new Plugin( this, options ));
+        }
+      });
+
+    // If the first parameter is a string and it doesn't start
+    // with an underscore or "contains" the `init`-function,
+    // treat this as a call to a public method.
+    } else if (typeof options === 'string' && options[0] !== '_' && options !== 'init') {
+
+      // Cache the method call
+      // to make it possible
+      // to return a value
+      var returns;
+
+      this.each(function () {
+        var instance = $.data(this, 'plugin_' + pluginName);
+
+        // Tests that there's already a plugin-instance
+        // and checks that the requested public method exists
+        if (instance instanceof Plugin && typeof instance[options] === 'function') {
+
+          // Call the method of our plugin instance,
+          // and pass it the supplied arguments.
+          returns = instance[options].apply( instance, Array.prototype.slice.call( args, 1 ) );
+        }
+
+        // Allow instances to be destroyed via the 'destroy' method
+        if (options === 'destroy') {
+          $.data(this, 'plugin_' + pluginName, null);
+        }
+      });
+
+      // If the earlier cached method
+      // gives a value back return the value,
+      // otherwise return this to preserve chainability.
+      return returns !== undefined ? returns : this;
+    }
+  };
+
+}(jQuery, window, document));
