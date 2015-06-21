@@ -81,6 +81,7 @@
         handle:             "> a",
         submenuSelector:    "*",
         submenuDirection:   "right",
+        openClassName:      "open",
         tolerance:          75,   // bigger = more forgivey when entering submenu
         activationDelay:    300,  // delay for first submenu opening
         mouseLocsTracked:   3,    // number of past mouse locations to track
@@ -181,7 +182,7 @@
       $(obj.el)
         .find(obj.options.rowSelector)
           .find(obj.options.handle)
-            .on('click', { this: obj }, obj._clickRowHandle);
+            .on('click', { obj: obj }, obj._clickRowHandle);
     },
 
 
@@ -189,8 +190,9 @@
      * Close already opened submenu
      */
     _clickRowHandle: function(e) {
-      if ($(this).closest('li').hasClass('open')) {
-        e.data.this._deactivate();
+      obj = e.data.obj;
+      if ($(this).closest('li').hasClass(obj.options.openClassName)) {
+        obj._deactivate();
         e.stopPropagation();
       }
     },
