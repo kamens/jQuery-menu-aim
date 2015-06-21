@@ -222,11 +222,11 @@
       $(function() {
 
         $('#cbp-hrmenu > ul').menuAim({
-          triggerEvent: 'hover',
-          activate: activate,
-          deactivate: deactivate,
-          submenuDirection: 'below',
-          activationDelay: 200
+          triggerEvent:       'click',
+          activateCallback:   activate,
+          deactivateCallback: deactivate,
+          submenuDirection:   'below',
+          activationDelay:    200
         });
 
         function activate( row ) {

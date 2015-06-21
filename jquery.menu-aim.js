@@ -76,20 +76,20 @@
 
   var pluginName  = 'menuAim',
       defaults    = {
-        triggerEvent:     "hover",
-        rowSelector:      "> li",
-        handle:           "> a",
-        submenuSelector:  "*",
-        submenuDirection: "right",
-        tolerance:        75,   // bigger = more forgivey when entering submenu
-        activationDelay:  300,  // delay for first submenu opening
-        mouseLocsTracked: 3,    // number of past mouse locations to track
-        defaultDelay:     300,  // ms delay when user appears to be entering submenu
-        enter:            $.noop,
-        exit:             $.noop,
-        activate:         $.noop,
-        deactivate:       $.noop,
-        exitMenu:         $.noop
+        triggerEvent:       "hover",
+        rowSelector:        "> li",
+        handle:             "> a",
+        submenuSelector:    "*",
+        submenuDirection:   "right",
+        tolerance:          75,   // bigger = more forgivey when entering submenu
+        activationDelay:    300,  // delay for first submenu opening
+        mouseLocsTracked:   3,    // number of past mouse locations to track
+        defaultDelay:       300,  // ms delay when user appears to be entering submenu
+        enterCallback:      $.noop,
+        exitCallback:       $.noop,
+        activateCallback:   $.noop,
+        deactivateCallback: $.noop,
+        exitMenuCallback:   $.noop
       };
 
   function Plugin( el, options ) {
@@ -117,18 +117,20 @@
        * Hook up initial menu events
        */
       if (this.isOnHover) {
-        this.hoverTriggerOn();
+        this._hoverTriggerOn();
       }
 
       if (this.isOnClick) {
-        this.clickTriggerOn();
+        this._clickTriggerOn();
       }
     },
+
+    // Private methods start with underscore
 
     /**
      * Keep track of the last few locations of the mouse.
      */
-    mousemoveDocument: function(e) {
+    _mouseMoveDocument: function(e) {
       obj = e.data.obj;
       obj.mouseLocs.push({x: e.pageX, y: e.pageY});
 
@@ -140,55 +142,55 @@
     /**
      * Cancel possible row activations when leaving the menu entirely
      */
-    mouseleaveMenu: function(e) {
+    _mouseLeaveMenu: function(e) {
       obj = e.data.obj;
       if (obj.timeoutId) {
         clearTimeout(obj.timeoutId);
       }
 
-      obj.possiblyDeactivate(this);
-      obj.options.exitMenu(this);
+      obj._possiblyDeactivate(this);
+      obj.options.exitMenuCallback(this);
     },
 
     /**
      * Trigger a possible row activation whenever entering a new row.
      */
-    mouseenterRow: function(e) {
+    _mouseEnterRow: function(e) {
       obj = e.data.obj;
       if (obj.timeoutId) {
         // Cancel any previous activation delays
         clearTimeout(obj.timeoutId);
       }
 
-      obj.options.enter(this);
-      obj.possiblyActivate(this);
+      obj.options.enterCallback(this);
+      obj._possiblyActivate(this);
     },
 
-    mouseleaveRow: function(e) {
-      e.data.obj.options.exit(this);
+    _mouseLeaveRow: function(e) {
+      e.data.obj.options.exitCallback(this);
     },
 
     /*
      * Immediately activate a row if the user clicks on it.
      */
-    clickRow: function(e) {
+    _clickRow: function(e) {
       obj = e.data.obj;
-      obj.activate(this);
+      obj._activate(this);
 
       // bind close event when submenu content is rendered
       $(obj.el)
         .find(obj.options.rowSelector)
           .find(obj.options.handle)
-            .on('click', { this: obj }, obj.clickRowHandle);
+            .on('click', { this: obj }, obj._clickRowHandle);
     },
 
 
     /*
      * Close already opened submenu
      */
-    clickRowHandle: function(e) {
+    _clickRowHandle: function(e) {
       if ($(this).closest('li').hasClass('open')) {
-        e.data.this.deactivate();
+        e.data.this._deactivate();
         e.stopPropagation();
       }
     },
@@ -196,40 +198,40 @@
     /**
      * Activate a menu row with possible delay
      */
-    activate: function(row) {
+    _activate: function(row) {
       var that = this;
       if (row == this.activeRow) {
         return;
       }
       if (parseInt(this.options.activationDelay, 0) > 0 && this.isOnHover) {
         if (this.activeRow) {
-          this.activateWithoutDelay(row);
+          this._activateWithoutDelay(row);
         } else {
           this.openDelayId = setTimeout(function() {
-            that.activateWithoutDelay(row);
+            that._activateWithoutDelay(row);
           },
           this.options.activationDelay);
         }
       } else {
-        this.activateWithoutDelay(row);
+        this._activateWithoutDelay(row);
       }
 
     },
 
-    activateWithoutDelay: function(row) {
+    _activateWithoutDelay: function(row) {
       if (this.activeRow) {
-        this.options.deactivate(this.activeRow);
+        this.options.deactivateCallback(this.activeRow);
       }
-      this.options.activate(row);
+      this.options.activateCallback(row);
       this.activeRow = row;
     },
 
-    deactivate: function() {
+    _deactivate: function() {
       if (this.openDelayId) {
         clearTimeout(this.openDelayId);
       }
       if (this.activeRow) {
-        this.options.deactivate(this.activeRow);
+        this.options.deactivateCallback(this.activeRow);
         this.activeRow = null;
       }
     },
@@ -239,29 +241,29 @@
      * shouldn't activate yet because user may be trying to enter
      * a submenu's content, then delay and check again later.
      */
-    possiblyActivate: function(row) {
-      var delay = this.activationDelay(),
+    _possiblyActivate: function(row) {
+      var delay = this._activationDelay(),
           that  = this;
 
       if (delay) {
         this.timeoutId = setTimeout(function() {
-          that.possiblyActivate(row);
+          that._possiblyActivate(row);
         }, delay);
       } else {
-        this.activate(row);
+        this._activate(row);
       }
     },
 
-    possiblyDeactivate: function(row) {
-      var delay = this.activationDelay(),
+    _possiblyDeactivate: function(row) {
+      var delay = this._activationDelay(),
           that  = this;
 
       if (delay) {
         this.timeoutId = setTimeout(function() {
-          that.possiblyDeactivate(row);
+          that._possiblyDeactivate(row);
         }, delay)
       } else {
-        this.options.deactivate(row);
+        this.options.deactivateCallback(row);
       }
     },
 
@@ -273,7 +275,7 @@
      * returns the number of milliseconds that should be delayed before
      * checking again to see if the row should be activated.
      */
-    activationDelay: function() {
+    _activationDelay: function() {
       if (!this.activeRow || !$(this.activeRow).is(this.options.submenuSelector)) {
         // If there is no other submenu row already active, then
         // go ahead and activate immediately.
@@ -383,59 +385,58 @@
     },
 
     // if the target isn't the container nor a descendant of the container
-    outsideMenuClick: function(e) {
+    _outsideMenuClick: function(e) {
       if ($(this.el).not(e.target) && $(this.el).has(e.target).length === 0) {
-        e.data.options.deactivate();
+        e.data.options.deactivateCallback();
       }
     },
 
-    hoverTriggerOn: function() {
-      $(this.el).on('mouseleave', { obj: this}, this.mouseleaveMenu )
+    _hoverTriggerOn: function() {
+      $(this.el).on('mouseleave', { obj: this}, this._mouseLeaveMenu )
         .find(this.options.rowSelector)
-          .on('mouseenter', { obj: this}, this.mouseenterRow)
-          .on('mouseleave', { obj: this}, this.mouseleaveRow);
-      $(window).on('blur', { obj: this }, this.mouseleaveMenu);
-      $(document).on('mousemove', { obj: this }, this.mousemoveDocument);
+          .on('mouseenter', { obj: this}, this._mouseEnterRow)
+          .on('mouseleave', { obj: this}, this._mouseLeaveRow);
+      $(window).on('blur', { obj: this }, this._mouseLeaveMenu);
+      $(document).on('mousemove', { obj: this }, this._mouseMoveDocument);
     },
 
-    hoverTriggerOff: function() {
-      $(this.el).off('mouseleave', this.mouseleaveMenu)
+    _hoverTriggerOff: function() {
+      $(this.el).off('mouseleave', this._mouseLeaveMenu)
         .find(this.options.rowSelector)
-          .off('mouseenter', this.mouseenterRow)
-          .off('mouseleave', this.mouseleaveRow)
-      $(window).off('blur', this.mouseleaveMenu);
-      $(document).off('mousemove', { obj: this }, this.mousemoveDocument);
+          .off('mouseenter', this._mouseEnterRow)
+          .off('mouseleave', this._mouseLeaveRow)
+      $(window).off('blur', this._mouseLeaveMenu);
+      $(document).off('mousemove', { obj: this }, this._mouseMoveDocument);
     },
 
-    clickTriggerOn: function() {
+    _clickTriggerOn: function() {
       $(this.el).find(this.options.rowSelector)
-        .on('click', { obj: this }, this.clickRow);
+        .on('click', { obj: this }, this._clickRow);
 
       // hide menu if clicked elsewere
-      $(document).on('click', { options: this.options }, this.outsideMenuClick);
+      $(document).on('click', { options: this.options }, this._outsideMenuClick);
     },
 
-    clickTriggerOff: function() {
+    _clickTriggerOff: function() {
       $(this.el)
         .find(this.options.rowSelector)
-          .off('click', this.clickRow);
-      $(document).off('click', this.outsideMenuClick);
+          .off('click', this._clickRow);
+      $(document).off('click', this._outsideMenuClick);
     },
 
-    // Private methods start with underscore
 
     // Public methods
+
     switchToHover: function() {
-      this.clickTriggerOff();
-      this.hoverTriggerOn();
+      this._clickTriggerOff();
+      this._hoverTriggerOn();
     },
 
     switchToClick: function() {
-      this.hoverTriggerOff();
-      this.clickTriggerOn();
+      this._hoverTriggerOff();
+      this._clickTriggerOn();
     }
   };
-
 
 
   // A lightweight plugin wrapper around the constructor,
