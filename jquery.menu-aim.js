@@ -389,8 +389,10 @@
 
     // if the target isn't the container nor a descendant of the container
     _outsideMenuClick: function(e) {
-      if ($(this.el).not(e.target) && $(this.el).has(e.target).length === 0) {
-        e.data.options.deactivateCallback();
+      var obj = e.data.obj;
+      if ($(obj.el).not(e.target) && $(obj.el).has(e.target).length === 0) {
+        obj.options.deactivateCallback(obj.activeRow);
+        obj.activeRow = null;
       }
     },
 
@@ -417,7 +419,7 @@
         .on('click', { obj: this }, this._clickRow);
 
       // hide menu if clicked elsewere
-      $(document).on('click', { options: this.options }, this._outsideMenuClick);
+      $(document).on('click', { obj: this }, this._outsideMenuClick);
     },
 
     _clickTriggerOff: function() {
