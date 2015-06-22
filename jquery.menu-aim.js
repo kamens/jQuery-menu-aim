@@ -209,6 +209,10 @@
         return;
       }
 
+      if (this.openDelayId) {
+        clearTimeout(this.openDelayId);
+      }
+
       // check if delay should be placed before activation
       if (parseInt(obj.options.activationDelay, 0) > 0 && obj.isOnHover) {
         if (obj.activeRow) {
@@ -234,7 +238,6 @@
     },
 
     _deactivate: function() {
-      debugger
       if (this.openDelayId) {
         clearTimeout(this.openDelayId);
       }
