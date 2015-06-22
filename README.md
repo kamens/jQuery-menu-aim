@@ -9,7 +9,7 @@ and creation history.
 
 [Try a demo.](https://rawgit.com/banesto/jQuery-menu-aim/master/advanced_example/index.html)
 
-![Amazon screenshot](https://raw.github.com/kamens/jQuery-menu-aim/master/amazon.png)
+![Amazon screenshot](https://raw.github.com/banesto/jQuery-menu-aim/master/amazon.png)
 
 Menu-aim tries to solve accidental sibling submenu openings by detecting the direction of
 the user's mouse movement. In the image blue triangle represents a possible movement area
