@@ -13,7 +13,7 @@
     <div class="container">
       <header class="clearfix">
         <h1>MenuAim jQuery plugin advanced example</h1>
-        <span>with Horizontal Drop-Down Menu</span>
+        <span>with Responsive Horizontal Drop-Down Menu</span>
       </header>
       <div class="main">
         <nav id="cbp-hrmenu" class="cbp-hrmenu">
@@ -213,11 +213,28 @@
         </nav>
       </div>
       <main>
-        <p>Hello World</p>
+        <h2>Features</h2>
+        <ul>
+          <li>UX enhancement for drop-down menus to achieve behavior when moving mouse cursor towards submenu through sibling menu item, current submenu stays open and sibling submenu does not open</li>
+          <li>Ability to set first submenu activation delay - in case menu opening is optional and not crutial and is potentially annoying to users</li>
+          <li>When mouse cursor leaves menu submenu autocloses (if set in 'hover' mode)</li>
+          <li>When in 'click' mode, user can close submenu by clicking outside menu</li>
+          <li>Ability to set whether submenu opens on 'hover' (default) or 'click'</li>
+          <li>Ability to change submenu opening trigger on-the-fly</li>
+        </ul>
 
-        <p><a id="click-switch" href="#">Switch submenu open trigger to click</a></p>
-        <p><a id="hover-switch" href="#">Switch submenu open trigger to hover</a></p>
+        <h2>Switch submenu open trigger</h2>
 
+        <p>
+          <a id="click-switch" class="action" href="#">Switch to CLICK</a>
+          <a id="hover-switch" class="action active" href="#">Switch to HOVER</a>
+        </p>
+
+        <h2>Repository</h2>
+        <p>You can clone, download or see additional project details on <a href="https://github.com/banesto/jQuery-menu-aim">https://github.com/banesto/jQuery-menu-aim</a>.</p>
+
+        <br/>
+        <p>Menu design by <a href="http://tympanus.net/codrops/2013/03/05/horizontal-drop-down-menu/" target="_blank">codrops</a></p>
       </main>
     </div>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -246,12 +263,16 @@
 
         // Switching triggers
 
-        $('#click-switch').on('click', function(){
+        $('#click-switch').on('click', function(e){
+          e.preventDefault();
           top_menu.menuAim('switchToClick');
+          $(this).addClass('active').siblings("a").toggleClass("active");
         });
 
-        $('#hover-switch').on('click', function(){
+        $('#hover-switch').on('click', function(e){
+          e.preventDefault();
           top_menu.menuAim('switchToHover');
+          $(this).addClass('active').siblings("a").toggleClass("active");
         });
 
       });

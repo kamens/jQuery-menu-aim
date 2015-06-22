@@ -37,6 +37,14 @@ a:hover {
   color: #000;
 }
 
+h2 {
+  margin: 1.5em 0 0.8em;
+}
+
+p {
+  margin: 0.5em 0 1em;
+}
+
 .container > header,
 .container > main {
   width: 90%;
@@ -46,16 +54,40 @@ a:hover {
 }
 
 .container > main a {
+  color: #47a3da;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.container > main a:hover {
+  color: #999;
+}
+
+.container > main a.action {
+  display: inline-block;
   color: #fff;
   text-decoration: none;
   font-weight: bold;
   background-color: #47a3da;
   padding: 5px;
+  margin: 0 5px 0 0;
 }
 
-.container > main a:hover {
-  /*color: #999;*/
+.container > main a.action:hover {
   background-color: #999;
+}
+
+.container > main a.action.active {
+  border-bottom: 5px solid #000;
+}
+
+.container > main > ul {
+  margin-bottom: 2em;
+}
+
+.container > main > ul li {
+  font-size: 110%;
+  line-height: 1.6em;
 }
 
 .container > header h1 {
