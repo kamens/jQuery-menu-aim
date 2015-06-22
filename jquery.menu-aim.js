@@ -201,21 +201,23 @@
      * Activate a menu row with possible delay
      */
     _activate: function(row) {
-      var that = this;
+      var obj = this;
       if (row == this.activeRow) {
         return;
       }
-      if (parseInt(this.options.activationDelay, 0) > 0 && this.isOnHover) {
-        if (this.activeRow) {
-          this._activateWithoutDelay(row);
+
+      // check if delay should be placed before activation
+      if (parseInt(obj.options.activationDelay, 0) > 0 && obj.isOnHover) {
+        if (obj.activeRow) {
+          obj._activateWithoutDelay(row);
         } else {
           this.openDelayId = setTimeout(function() {
-            that._activateWithoutDelay(row);
+            obj._activateWithoutDelay(row);
           },
-          this.options.activationDelay);
+          obj.options.activationDelay);
         }
       } else {
-        this._activateWithoutDelay(row);
+        obj._activateWithoutDelay(row);
       }
 
     },
@@ -435,11 +437,15 @@
     switchToHover: function() {
       this._clickTriggerOff();
       this._hoverTriggerOn();
+      this.isOnHover = true;
+      this.isOnClick = false;
     },
 
     switchToClick: function() {
       this._hoverTriggerOff();
       this._clickTriggerOn();
+      this.isOnHover = false;
+      this.isOnClick = true;
     }
   };
 
