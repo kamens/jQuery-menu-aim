@@ -52,7 +52,7 @@
 
 .cbp-hropen .cbp-hrsub {
   display: block;
-  padding-bottom: 3em;
+  padding-bottom: 2em;
 }
 
 .cbp-hrmenu .cbp-hrsub-inner > div {
@@ -72,14 +72,14 @@
 }
 
 .cbp-hrmenu .cbp-hrsub-inner > div a {
-  line-height: 2em;
+  line-height: 1.5em;
 }
 
 .cbp-hrsub h4 {
   color: #afdefa;
-  padding: 2em 0 0.6em;
+  padding: 1em 0 0.6em;
   margin: 0;
-  font-size: 160%;
+  font-size: 130%;
   font-weight: 300;
 }
 
