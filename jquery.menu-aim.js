@@ -149,7 +149,7 @@
         clearTimeout(obj.timeoutId);
       }
 
-      obj._possiblyDeactivate(this);
+      obj._possiblyDeactivate(obj.activeRow);
       obj.options.exitMenuCallback(this);
     },
 
@@ -266,6 +266,7 @@
         }, delay)
       } else {
         this.options.deactivateCallback(row);
+        this.activeRow = null;
       }
     },
 
