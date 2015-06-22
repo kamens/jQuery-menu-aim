@@ -23,7 +23,7 @@
     </style>
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
 
-    <!-- 
+    <!--
       jQuery-menu-aim: the following styles are used to customize bootstrap's
       dropdowns and popover to play a little nicer w/ this example. They are
       personal choices and not necessary for your use of jQuery-menu-aim.
@@ -202,8 +202,8 @@
         // jQuery-menu-aim: <meaningful part of the example>
         // Hook up events to be fired on menu row activation.
         $menu.menuAim({
-            activate: activateSubmenu,
-            deactivate: deactivateSubmenu
+            activateCallback: activateSubmenu,
+            deactivateCallback: deactivateSubmenu
         });
         // jQuery-menu-aim: </meaningful part of the example>
 
