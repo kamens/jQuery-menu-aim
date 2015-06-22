@@ -28,69 +28,39 @@
  * Use like so:
  *
  *      $("#menu").menuAim({
- *          activate: $.noop,  // fired on row activation
- *          deactivate: $.noop  // fired on row deactivation
+ *          activateCallback:   $.noop, // fired on row activation
+ *          deactivateCallback: $.noop  // fired on row deactivation
  *      });
  *
- *  ...to receive events when a menu's row has been purposefully (de)activated.
  *
- * The following options can be passed to menuAim. All functions execute with
- * the relevant row's HTML element as the execution context ('this'):
- *
- *      .menuAim({
- *          // A means of activating submenu - either hover or click or both
- *          triggerEvent: 'click',
- *
- *          // Function to call when a row is purposefully activated. Use this
- *          // to show a submenu's content for the activated row.
- *          activate: function() {},
- *
- *          // Function to call when a row is deactivated.
- *          deactivate: function() {},
- *
- *          // Function to call when mouse enters a menu row. Entering a row
- *          // does not mean the row has been activated, as the user may be
- *          // mousing over to a submenu.
- *          enter: function() {},
- *
- *          // Function to call when mouse exits a menu row.
- *          exit: function() {},
- *
- *          // Selector for identifying which elements in the menu are rows
- *          // that can trigger the above events. Defaults to "> li".
- *          rowSelector: "> li",
- *
- *          // You may have some menu rows that aren't submenus and therefore
- *          // shouldn't ever need to "activate." If so, filter submenu rows w/
- *          // this selector. Defaults to "*" (all elements).
- *          submenuSelector: "*",
- *
- *          // Direction the submenu opens relative to the main menu. Can be
- *          // left, right, above, or below. Defaults to "right".
- *          submenuDirection: "right"
- *      });
- *
- * https://github.com/kamens/jQuery-menu-aim
+ * https://github.com/banesto/jQuery-menu-aim
 */
 ;(function ( $, window, document, undefined ) {
 
   var pluginName  = 'menuAim',
       defaults    = {
-        triggerEvent:       "hover",
-        rowSelector:        "> li",
-        handle:             "> a",
-        submenuSelector:    "*",
-        submenuDirection:   "right",
-        openClassName:      "open",
-        tolerance:          75,   // bigger = more forgivey when entering submenu
-        activationDelay:    300,  // delay for first submenu opening
-        mouseLocsTracked:   3,    // number of past mouse locations to track
-        defaultDelay:       300,  // ms delay when user appears to be entering submenu
-        enterCallback:      $.noop,
-        exitCallback:       $.noop,
-        activateCallback:   $.noop,
-        deactivateCallback: $.noop,
-        exitMenuCallback:   $.noop
+        triggerEvent:       "hover",  // A means of activating submenu - either 'hover' or 'click' or 'both
+        rowSelector:        "> li",   // Selector for identifying which elements in the menu are rows
+        handle:             "> a",    // Handle for triggering mouse clicks on menu item
+        submenuSelector:    "*",      // You may have some menu rows that aren't submenus and therefore
+                                      // shouldn't ever need to "activate." If so, filter submenu rows w/
+                                      // this selector. Defaults to "*" (all elements).
+        submenuDirection:   "right",  // Direction the submenu opens relative to the main menu. Can be
+                                      // left, right, above, or below. Defaults to "right".
+        openClassName:      "open",   // Class that will be applied to menu item when activated
+
+        tolerance:          75,       // Bigger = more tolerant for mouse movement precision when entering submenu
+        activationDelay:    300,      // Delay (ms) for first submenu opening
+        mouseLocsTracked:   3,        // Number of past mouse locations to track direction
+        defaultDelay:       300,      // Delay (ms) when user appears to be entering submenu
+
+        enterCallback:      $.noop,   // Function to call when mouse enters a menu row. Entering a row does not mean
+                                      // the row has been activated, as the user may be mousing over to a submenu.
+        activateCallback:   $.noop,   // Function to call when a row is purposefully activated. Use this
+                                      // to show a submenu's content for the activated row.
+        deactivateCallback: $.noop,   // Function to call when a row is deactivated.
+        exitCallback:       $.noop,   // Function to call when mouse exits a menu row.
+        exitMenuCallback:   $.noop    // Function to call when mouse exits whole menu - for autoclosing submenu
       };
 
   function Plugin( el, options ) {
