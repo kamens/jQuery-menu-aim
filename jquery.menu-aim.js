@@ -148,6 +148,9 @@
       if (obj.timeoutId) {
         clearTimeout(obj.timeoutId);
       }
+      if (obj.openDelayId) {
+        clearTimeout(obj.openDelayId);
+      }
 
       obj._possiblyDeactivate(obj.activeRow);
       obj.options.exitMenuCallback(this);
@@ -231,6 +234,7 @@
     },
 
     _deactivate: function() {
+      debugger
       if (this.openDelayId) {
         clearTimeout(this.openDelayId);
       }
