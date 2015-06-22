@@ -1,7 +1,7 @@
 jQuery-menu-aim
 ===============
 
-menu-aim is a jQuery plugin for dropdown menus that can differentiate
+Menu-aim is a jQuery plugin for dropdown menus that can differentiate
 between a user trying hover over a dropdown item vs trying to navigate into
 a submenu's contents. It's originally developed by [kamens](//github.com/kamens/).
 You can check out original [project](https://github.com/kamens/jQuery-menu-aim) for reference
@@ -9,14 +9,14 @@ and creation history.
 
 [Try a demo.](https://rawgit.com/banesto/jQuery-menu-aim/master/advanced_example/index.html)
 
-![Amazon screenshot](https://raw.github.com/banesto/jQuery-menu-aim/master/amazon.png)
-
 Menu-aim tries to solve accidental sibling submenu openings by detecting the direction of
 the user's mouse movement. In the image blue triangle represents a possible movement area
 for mouse cursor towards submenu edges when submenu will stay open until `defaultDelay` will end.
 If mouse cursor moves out of this triange, then sibling submenu will pop up. This can make
-for quicker transitions when navigating up and down the menu. The experience is hopefully
-similar to Amazon's "Shop by Department" dropdown.
+for quicker transitions when navigating up and down the menu. The experience is similar to
+Amazon's "Shop by Department" dropdown.
+
+![Amazon screenshot](https://raw.github.com/banesto/jQuery-menu-aim/master/amazon.png)
 
 ## Use like so:
 
@@ -25,7 +25,16 @@ similar to Amazon's "Shop by Department" dropdown.
          deactivateCallback: $.noop   // fired on row deactivation
      });
 
-...to receive events when a menu's row has been purposefully (de)activated.
+You have to create activation and deactivation functions in you own page that could simply
+add 'open' class to active submenu like that:
+
+    function activate(row) {
+      $(row).addClass('open');
+    }
+
+    function deactivate(row) {
+      $(row).removeClass('open');
+    }
 
 The following options can be passed to menuAim. All functions execute with
 the relevant row's HTML element as the execution context ('this'):
