@@ -310,11 +310,10 @@
          * Hook up initial menu events
          */
         $menu
-            .mouseleave(mouseleaveMenu)
-            .find(options.rowSelector)
-                .mouseenter(mouseenterRow)
-                .mouseleave(mouseleaveRow)
-                .click(clickRow);
+            .on("mouseleave", mouseleaveMenu)
+            .on("mouseenter", options.rowSelector, mouseenterRow)
+            .on("mouseleave", options.rowSelector, mouseleaveRow)
+            .on("click", options.rowSelector, clickRow);
 
         $(document).mousemove(mousemoveDocument);
 
