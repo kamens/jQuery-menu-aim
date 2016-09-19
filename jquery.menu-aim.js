@@ -57,6 +57,14 @@
  *          // that can trigger the above events. Defaults to "> li".
  *          rowSelector: "> li",
  *
+ *          // Selector for identifying which elements in the menu need
+ *          // ignoring from any trigger events. Defaults to ".menu-aim-ignore".
+ *          rowIgnoreSelector: ".menu-aim-ignore",
+ *
+ *          // Selector for activating a menu item on initialising
+ *          // any index 0 and above. Defaults to -1.
+ *          initialActivate: -1,
+ *
  *          // You may have some menu rows that aren't submenus and therefore
  *          // shouldn't ever need to "activate." If so, filter submenu rows w/
  *          // this selector. Defaults to "*" (all elements).
@@ -88,6 +96,8 @@
             timeoutId = null,
             options = $.extend({
                 rowSelector: "> li",
+                rowIgnoreSelector: ".menu-aim-ignore",
+                initialActivate: -1,
                 submenuSelector: "*",
                 submenuDirection: "right",
                 tolerance: 75,  // bigger = more forgivey when entering submenu
@@ -312,12 +322,19 @@
         $menu
             .mouseleave(mouseleaveMenu)
             .find(options.rowSelector)
+                .not(options.rowIgnoreSelector)
                 .mouseenter(mouseenterRow)
                 .mouseleave(mouseleaveRow)
                 .click(clickRow);
 
-        $(document).mousemove(mousemoveDocument);
+        /**
+         * Activate index if initial value set
+         */
+        if(options.initialActivate > -1) {
+          $menu.find(options.rowSelector).eq(options.initialActivate).trigger('mouseenter');
+        }
 
+        $(document).mousemove(mousemoveDocument);
     };
 })(jQuery);
 
