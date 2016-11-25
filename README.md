@@ -1,13 +1,13 @@
-jQuery-menu-aim
+js-menu-aim
 ===============
 
-menu-aim is a jQuery plugin for dropdown menus that can differentiate
+js-menu-aim is a module to handle dropdown menus that can differentiate
 between a user trying hover over a dropdown item vs trying to navigate into
 a submenu's contents.
 
-[Try a demo.](https://rawgithub.com/kamens/jQuery-menu-aim/master/example/example.html)
+[Try a demo.](https://rawgithub.com/Wikia/js-menu-aim/master/example/example.html)
 
-![Amazon screenshot](https://raw.github.com/kamens/jQuery-menu-aim/master/amazon.png)
+![Amazon screenshot](https://rawgithub.com/Wikia/js-menu-aim/master/amazon.png)
 
 This problem is normally solved using timeouts and delays. menu-aim tries to
 solve this by detecting the direction of the user's mouse movement. This can
@@ -17,65 +17,73 @@ dropdown.
 
 ## Use like so:
 
-     $("#menu").menuAim({
-         activate: $.noop,  // fired on row activation
-         deactivate: $.noop  // fired on row deactivation
-     });
+    menuAim( document.querySelectorAll( "#menu" ), {
+        activate: function () {},  // fired on row activation
+        deactivate: function () {}  // fired on row deactivation
+    } );
 
 ...to receive events when a menu's row has been purposefully (de)activated.
 
 The following options can be passed to menuAim. All functions execute with
 the relevant row's HTML element as the execution context ('this'):
 
-     .menuAim({
-         // Function to call when a row is purposefully activated. Use this
-         // to show a submenu's content for the activated row.
-         activate: function() {},
+    menuAim( DOMEmenent
+        // Function to call when a row is purposefully activated. Use this
+        // to show a submenu's content for the activated row.
+        activate: function() {},
 
-         // Function to call when a row is deactivated.
-         deactivate: function() {},
+        // Function to call when a row is deactivated.
+        deactivate: function() {},
 
-         // Function to call when mouse enters a menu row. Entering a row
-         // does not mean the row has been activated, as the user may be
-         // mousing over to a submenu.
-         enter: function() {},
+        // Function to call when mouse enters a menu row. Entering a row
+        // does not mean the row has been activated, as the user may be
+        // mousing over to a submenu.
+        enter: function() {},
 
-         // Function to call when mouse exits a menu row.
-         exit: function() {},
+        // Function to call when mouse exits a menu row.
+        exit: function() {},
 
-         // Function to call when mouse exits the entire menu. If this returns
-         // true, the current row's deactivation event and callback function
-         // will be fired. Otherwise, if this isn't supplied or it returns
-         // false, the currently activated row will stay activated when the
-         // mouse leaves the menu entirely.
-         exitMenu: function() {},
+        // Function to call when mouse exits the entire menu. If this returns
+        // true, the current row's deactivation event and callback function
+        // will be fired. Otherwise, if this isn't supplied or it returns
+        // false, the currently activated row will stay activated when the
+        // mouse leaves the menu entirely.
+        exitMenu: function() {},
 
-         // Selector for identifying which elements in the menu are rows
-         // that can trigger the above events. Defaults to "> li".
-         rowSelector: "> li",
+        // Selector for identifying which elements in the menu are rows
+        // that can trigger the above events. Defaults to "li".
+        rowSelector: "li",
 
-         // You may have some menu rows that aren't submenus and therefore
-         // shouldn't ever need to "activate." If so, filter submenu rows w/
-         // this selector. Defaults to "*" (all elements).
-         submenuSelector: "*",
+        // You may have some menu rows that aren't submenus and therefore
+        // shouldn't ever need to "activate." If so, filter submenu rows w/
+        // this selector. Defaults to "*" (all elements).
+        submenuSelector: "*",
 
-         // Direction the submenu opens relative to the main menu. This
-         // controls which direction is "forgiving" as the user moves their
-         // cursor from the main menu into the submenu. Can be one of "right",
-         // "left", "above", or "below". Defaults to "right".
-         submenuDirection: "right"
-     });
+        // Direction the submenu opens relative to the main menu. This
+        // controls which direction is "forgiving" as the user moves their
+        // cursor from the main menu into the submenu. Can be one of "right",
+        // "left", "above", or "below". Defaults to "right".
+        submenuDirection: "right"
+    });
 
-menu-aim assumes that you are using a menu with submenus that expand
+js-menu-aim assumes that you are using a menu with submenus that expand
 to the menu's right. It will fire events when the user's mouse enters a new
 dropdown item *and* when that item is being intentionally hovered over.
 
 ## Want an example to learn from?
 
-Check out example/example.html -- it has [a working dropdown for you to play with](https://rawgithub.com/kamens/jQuery-menu-aim/master/example/example.html):
+Check out example/example.html -- it has [a working dropdown for you to play with](https://rawgithub.com/Wikia/js-menu-aimmaster/example/example.html):
 
 ![Example screenshot](https://raw.github.com/kamens/jQuery-menu-aim/master/example.png)<br>
 _Play with the above example full of fun monkey pictures by opening example/example.html after downloading the repo._
+
+
+* A few performance improvements and release of jQuery dependency by the [Wikia](http://www.wikia.com)
+* [https://github.com/Wikia/js-menu-aim](https://github.com/Wikia/js-menu-aim)
+* git@github.com:Wikia/js-menu-aim.git
+* forked from: [https://github.com/kamens/jQuery-menu-aim](https://github.com/kamens/jQuery-menu-aim)
+* Works on IE9+ (because of addEventListener...)
+
 
 ## FAQ
 
