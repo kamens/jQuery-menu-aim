@@ -102,6 +102,8 @@
         var MOUSE_LOCS_TRACKED = 3,  // number of past mouse locations to track
             DELAY = 300;  // ms delay when user appears to be entering submenu
 
+        var mouseleaveTimer;
+
         /**
          * Keep track of the last few locations of the mouse.
          */
@@ -121,7 +123,7 @@
                     clearTimeout(timeoutId);
                 }
 
-                window.setTimeout(function () {
+                mouseleaveTimer = window.setTimeout(function () {
                     // If exitMenu is supplied and returns true, deactivate the
                     // currently active row on menu exit.
                     if (options.exitMenu(this)) {
@@ -141,6 +143,8 @@
                     // Cancel any previous activation delays
                     clearTimeout(timeoutId);
                 }
+
+                window.clearTimeout(mouseleaveTimer);
 
                 options.enter(this);
                 possiblyActivate(this);
