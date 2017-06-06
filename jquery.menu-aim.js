@@ -95,11 +95,14 @@
                 exit: $.noop,
                 activate: $.noop,
                 deactivate: $.noop,
-                exitMenu: $.noop
+                exitMenu: $.noop,
+                exitDelay: 0
             }, opts);
 
         var MOUSE_LOCS_TRACKED = 3,  // number of past mouse locations to track
             DELAY = 300;  // ms delay when user appears to be entering submenu
+
+        var mouseleaveTimer;
 
         /**
          * Keep track of the last few locations of the mouse.
@@ -120,15 +123,16 @@
                     clearTimeout(timeoutId);
                 }
 
-                // If exitMenu is supplied and returns true, deactivate the
-                // currently active row on menu exit.
-                if (options.exitMenu(this)) {
-                    if (activeRow) {
-                        options.deactivate(activeRow);
+                mouseleaveTimer = window.setTimeout(function () {
+                    // If exitMenu is supplied and returns true, deactivate the
+                    // currently active row on menu exit.
+                    if (options.exitMenu(this)) {
+                        if (activeRow) {
+                            options.deactivate(activeRow);
+                        }
+                        activeRow = null;
                     }
-
-                    activeRow = null;
-                }
+                }, options.exitDelay);
             };
 
         /**
@@ -139,6 +143,8 @@
                     // Cancel any previous activation delays
                     clearTimeout(timeoutId);
                 }
+
+                window.clearTimeout(mouseleaveTimer);
 
                 options.enter(this);
                 possiblyActivate(this);
