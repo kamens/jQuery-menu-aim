@@ -95,7 +95,8 @@
                 exit: $.noop,
                 activate: $.noop,
                 deactivate: $.noop,
-                exitMenu: $.noop
+                exitMenu: $.noop,
+                exitDelay: 0
             }, opts);
 
         var MOUSE_LOCS_TRACKED = 3,  // number of past mouse locations to track
@@ -120,15 +121,16 @@
                     clearTimeout(timeoutId);
                 }
 
-                // If exitMenu is supplied and returns true, deactivate the
-                // currently active row on menu exit.
-                if (options.exitMenu(this)) {
-                    if (activeRow) {
-                        options.deactivate(activeRow);
+                window.setTimeout(function () {
+                    // If exitMenu is supplied and returns true, deactivate the
+                    // currently active row on menu exit.
+                    if (options.exitMenu(this)) {
+                        if (activeRow) {
+                            options.deactivate(activeRow);
+                        }
+                        activeRow = null;
                     }
-
-                    activeRow = null;
-                }
+                }, options.exitDelay);
             };
 
         /**
