@@ -23,7 +23,7 @@
     </style>
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
 
-    <!-- 
+    <!--
       jQuery-menu-aim: the following styles are used to customize bootstrap's
       dropdowns and popover to play a little nicer w/ this example. They are
       personal choices and not necessary for your use of jQuery-menu-aim.
@@ -211,7 +211,7 @@
         // contents. Again, this can be done in any number of ways. jQuery-menu-aim
         // doesn't care how you do this, it just fires the activate and deactivate
         // events at the right times so you know when to show and hide your submenus.
-        function activateSubmenu(row) {
+        function activateSubmenu(row, event) {
             var $row = $(row),
                 submenuId = $row.data("submenuId"),
                 $submenu = $("#" + submenuId),
@@ -230,7 +230,7 @@
             $row.find("a").addClass("maintainHover");
         }
 
-        function deactivateSubmenu(row) {
+        function deactivateSubmenu(row, event) {
             var $row = $(row),
                 submenuId = $row.data("submenuId"),
                 $submenu = $("#" + submenuId);
@@ -259,4 +259,3 @@
 
   </body>
 </html>
-
