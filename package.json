@@ -1,0 +1,27 @@
+{
+  "name": "jquery-menu-aim",
+  "version": "1.0.0",
+  "description": "jQuery plugin to fire events when user's cursor aims at particular dropdown menu items. For making responsive mega dropdowns like Amazon's.",
+  "main": "jquery.menu-aim.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/banesto/jQuery-menu-aim.git"
+  },
+  "keywords": [
+    "jquery",
+    "menu",
+    "aim"
+  ],
+  "author": "Ben Kamens",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/banesto/jQuery-menu-aim/issues"
+  },
+  "homepage": "https://github.com/banesto/jQuery-menu-aim#readme"
+}
