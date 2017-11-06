@@ -1,0 +1,107 @@
+/* General Demo Style */
+@import url(//fonts.googleapis.com/css?family=Lato:300,400,700);
+
+body, html { font-size: 100%;   padding: 0; margin: 0;}
+
+/* Reset */
+*,
+*:after,
+*:before {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+/* Clearfix hack by Nicolas Gallagher: http://nicolasgallagher.com/micro-clearfix-hack/ */
+.clearfix:before,
+.clearfix:after {
+  content: " ";
+  display: table;
+}
+
+.clearfix:after {
+  clear: both;
+}
+
+body {
+  font-family: 'Lato', Calibri, Arial, sans-serif;
+  color: #47a3da;
+}
+
+a {
+  color: #f0f0f0;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #000;
+}
+
+h2 {
+  margin: 1.5em 0 0.8em;
+}
+
+p {
+  margin: 0.5em 0 1em;
+}
+
+.container > header,
+.container > main {
+  width: 90%;
+  max-width: 70em;
+  margin: 0 auto;
+  padding: 1em 1.5em;
+}
+
+.container > main a {
+  color: #47a3da;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.container > main a:hover {
+  color: #999;
+}
+
+.container > main a.action {
+  display: inline-block;
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  background-color: #47a3da;
+  padding: 5px;
+  margin: 0 5px 0 0;
+}
+
+.container > main a.action:hover {
+  background-color: #999;
+}
+
+.container > main a.action.active {
+  border-bottom: 5px solid #000;
+}
+
+.container > main > ul {
+  margin-bottom: 2em;
+}
+
+.container > main > ul li {
+  font-size: 110%;
+  line-height: 1.6em;
+}
+
+.container > header h1 {
+  font-size: 2.125em;
+  line-height: 1.3;
+  margin: 0;
+  /*float: left;*/
+  font-weight: 400;
+}
+
+.container > header span {
+  display: block;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5em;
+  padding: 0 0 0.6em 0.1em;
+}

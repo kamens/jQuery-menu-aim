@@ -1,85 +1,116 @@
 jQuery-menu-aim
 ===============
 
-menu-aim is a jQuery plugin for dropdown menus that can differentiate
+Menu-aim is a jQuery plugin for dropdown menus that can differentiate
 between a user trying hover over a dropdown item vs trying to navigate into
-a submenu's contents.
+a submenu's contents. It's originally developed by [kamens](//github.com/kamens/).
+You can check out original [project](https://github.com/kamens/jQuery-menu-aim) for reference
+and creation history.
 
-[Try a demo.](https://rawgithub.com/kamens/jQuery-menu-aim/master/example/example.html)
+[Try a demo.](https://rawgit.com/banesto/jQuery-menu-aim/master/advanced_example/index.html)
 
-![Amazon screenshot](https://raw.github.com/kamens/jQuery-menu-aim/master/amazon.png)
+Menu-aim tries to solve accidental sibling submenu openings by detecting the direction of
+the user's mouse movement. In the image blue triangle represents a possible movement area
+for mouse cursor towards submenu edges when submenu will stay open until `defaultDelay` will end.
+If mouse cursor moves out of this triange, then sibling submenu will pop up. This can make
+for quicker transitions when navigating up and down the menu. The experience is similar to
+Amazon's "Shop by Department" dropdown.
 
-This problem is normally solved using timeouts and delays. menu-aim tries to
-solve this by detecting the direction of the user's mouse movement. This can
-make for quicker transitions when navigating up and down the menu. The
-experience is hopefully similar to amazon.com/'s "Shop by Department"
-dropdown.
+![Amazon screenshot](https://raw.github.com/banesto/jQuery-menu-aim/master/amazon.png)
 
 ## Use like so:
 
      $("#menu").menuAim({
-         activate: $.noop,  // fired on row activation
-         deactivate: $.noop  // fired on row deactivation
+         activateCallback: $.noop,    // fired on row activation
+         deactivateCallback: $.noop   // fired on row deactivation
      });
 
-...to receive events when a menu's row has been purposefully (de)activated.
+You have to create activation and deactivation functions in you own page that could simply
+add 'open' class to active submenu like that:
+
+    function activate(row) {
+      $(row).addClass('open');
+    }
+
+    function deactivate(row) {
+      $(row).removeClass('open');
+    }
 
 The following options can be passed to menuAim. All functions execute with
 the relevant row's HTML element as the execution context ('this'):
 
-     .menuAim({
-         // Function to call when a row is purposefully activated. Use this
-         // to show a submenu's content for the activated row.
-         activate: function() {},
+    $("#menu").menuAim({
+      triggerEvent:       "hover", // A means of activating submenu.
+                                   // It's either 'hover' or 'click' or 'both
+      rowSelector:        "> li",  // Selector for identifying which elements
+                                   // in the menu are rows
+      handle:             "> a",   // Handle for triggering mouse clicks on menu item
+      submenuSelector:    "*",     // You may have some menu rows that aren't submenus
+                                   // and thereforeshouldn't ever need to "activate."
+                                   // If so, filter submenu rows w/
+                                   // this selector. Defaults to "*" (all elements).
+      submenuDirection:   "right", // Direction the submenu opens relative to the
+                                   // main menu. Can be left, right, above, or below.
+                                   // Defaults to "right".
+      openClassName:      "open",  // Class that will be applied to menu item
+                                   // when activated
 
-         // Function to call when a row is deactivated.
-         deactivate: function() {},
+      tolerance:          75,      // Bigger = more tolerant for mouse movement
+                                   // precision when entering submenu
+      activationDelay:    300,     // Delay (ms) for first submenu opening
+      mouseLocsTracked:   3,       // Number of past mouse locations to track direction
+      defaultDelay:       300,     // Delay (ms) when user appears to be entering
+                                   // submenu and mouse movement is being tracked
 
-         // Function to call when mouse enters a menu row. Entering a row
-         // does not mean the row has been activated, as the user may be
-         // mousing over to a submenu.
-         enter: function() {},
+      enterCallback:      $.noop,  // Function to call when mouse enters a menu row.
+                                   // Entering a row does not mean the row has been
+                                   // activated, as the user may be
+                                   // mousing over to a submenu.
+      activateCallback:   $.noop,  // Function to call when a row is purposefully
+                                   // activated. Use this to show a submenu's
+                                   // content for the activated row.
+      deactivateCallback: $.noop,  // Function to call when a row is deactivated.
+      exitCallback:       $.noop,  // Function to call when mouse exits a menu row.
+      exitMenuCallback:   $.noop   // Function to call when mouse exits whole menu.
+                                   // This is needed for autoclosing submenu
+    });
 
-         // Function to call when mouse exits a menu row.
-         exit: function() {},
-
-         // Function to call when mouse exits the entire menu. If this returns
-         // true, the current row's deactivation event and callback function
-         // will be fired. Otherwise, if this isn't supplied or it returns
-         // false, the currently activated row will stay activated when the
-         // mouse leaves the menu entirely.
-         exitMenu: function() {},
-
-         // Selector for identifying which elements in the menu are rows
-         // that can trigger the above events. Defaults to "> li".
-         rowSelector: "> li",
-
-         // You may have some menu rows that aren't submenus and therefore
-         // shouldn't ever need to "activate." If so, filter submenu rows w/
-         // this selector. Defaults to "*" (all elements).
-         submenuSelector: "*",
-
-         // Direction the submenu opens relative to the main menu. This
-         // controls which direction is "forgiving" as the user moves their
-         // cursor from the main menu into the submenu. Can be one of "right",
-         // "left", "above", or "below". Defaults to "right".
-         submenuDirection: "right"
-     });
-
-menu-aim assumes that you are using a menu with submenus that expand
+Submenus can be placed in multiple positions relatively to main menu - `left`, `right`, `above` or `below`.
+By default menu-aim assumes that you are using a menu with submenus that expand
 to the menu's right. It will fire events when the user's mouse enters a new
-dropdown item *and* when that item is being intentionally hovered over.
+menu item *and* when that item is being intentionally hovered over.
+
+### Changing submenu open trigger
+
+You can change submenu opening trigger from `hover` to `click`:
+
+    $("#menu").('switchToClick');
+
+And from `click` to `hover`:
+
+    $("#menu").('switchToHover');
 
 ## Want an example to learn from?
 
-Check out example/example.html -- it has [a working dropdown for you to play with](https://rawgithub.com/kamens/jQuery-menu-aim/master/example/example.html):
+[Advanced Example](https://rawgit.com/banesto/jQuery-menu-aim/master/advanced_example/index.html) of submenus opening below main menu with ability to switch opening trigger on the fly:
 
-![Example screenshot](https://raw.github.com/kamens/jQuery-menu-aim/master/example.png)<br>
+![Advanced example screenshot](https://raw.github.com/banesto/jQuery-menu-aim/master/advanced_example.png)
+
+[Bootstrap example](https://rawgithub.com/banesto/jQuery-menu-aim/master/example/example.html) with menu-aim applied to secondary menu which opens to right:
+
+![Example screenshot](https://raw.github.com/banesto/jQuery-menu-aim/master/example.png)<br>
 _Play with the above example full of fun monkey pictures by opening example/example.html after downloading the repo._
 
-## FAQ
+## Features
 
-1. What's the license? [MIT](http://en.wikipedia.org/wiki/MIT_License).
-2. Does it support horizontal menus or submenus that open to the left? Yup. Check out the submenuDirection option above.
-3. I work at a big company that requires a version number on this third party code before I can use it. Do you have a version number? Sure, current version: 1.1
-4. I'm not nearly bored enough. Got anything else? [Read about this plugin's creation](http://bjk5.com/post/44698559168/breaking-down-amazons-mega-dropdown).
+  * UX enhancement for drop-down menus to achieve behavior when moving mouse cursor towards submenu through sibling menu item, current submenu stays open and sibling submenu does not open
+  * Ability to set first submenu activation delay - in case menu opening is optional and not crutial and is potentially annoying to users
+  * When mouse cursor leaves menu submenu autocloses (if set in 'hover' mode)
+  * When in 'click' mode, user can close submenu by clicking outside menu
+  * Ability to set whether submenu opens on 'hover' (default) or 'click'
+  * Ability to change submenu opening trigger on-the-fly
+
+## Licence
+
+Project lincensed under [MIT](http://en.wikipedia.org/wiki/MIT_License) license.
+
