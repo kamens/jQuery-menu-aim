@@ -11,7 +11,6 @@
  * + added submenuDirection == 'both' option for bi-directional multi-hierarchy menus.
  * + changes are marked with: vi adaption and vi adaption end on lines:
  * + 102, 210, 313 - 327, 336 - 345.
- * + It is forked from https://github.com/kamens/jQuery-menu-aim
  * menu-aim assumes that you have are using a menu with submenus that expand
  * to the menu's right. It will fire events when the user's mouse enters a new
  * dropdown item *and* when that item is being intentionally hovered over.
