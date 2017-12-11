@@ -1,8 +1,16 @@
-/**
+/** @preserve
  * menu-aim is a jQuery plugin for dropdown menus that can differentiate
  * between a user trying hover over a dropdown item vs trying to navigate into
  * a submenu's contents.
- *
+ * @see https://github.com/kamens/jQuery-menu-aim/
+ * @version 1.1 (modified)
+ * @copyright 2014 by Ben Kamens
+ * @license MIT http://en.wikipedia.org/wiki/MIT_License
+ * @modified by Clemens Fiedler, Virtual Identity AG, 2015:
+ * + added noDelayClass option to disable delay on first mouseenter for multi-hierarchy menus
+ * + added submenuDirection == 'both' option for bi-directional multi-hierarchy menus.
+ * + changes are marked with: vi adaption and vi adaption end on lines:
+ * + 102, 210, 313 - 327, 336 - 345.
  * menu-aim assumes that you have are using a menu with submenus that expand
  * to the menu's right. It will fire events when the user's mouse enters a new
  * dropdown item *and* when that item is being intentionally hovered over.
@@ -90,6 +98,7 @@
                 rowSelector: "> li",
                 submenuSelector: "*",
                 submenuDirection: "right",
+                noDelayClass: "no-delay", // vi adaption
                 tolerance: 75,  // bigger = more forgivey when entering submenu
                 enter: $.noop,
                 exit: $.noop,
@@ -196,7 +205,9 @@
          * checking again to see if the row should be activated.
          */
         var activationDelay = function() {
-                if (!activeRow || !$(activeRow).is(options.submenuSelector)) {
+            // vi adaption
+            if (!activeRow || !$(activeRow).is(options.submenuSelector) || $menu.hasClass(options.noDelayClass)) {
+            // vi adaption end
                     // If there is no other submenu row already active, then
                     // go ahead and activate immediately.
                     return 0;
@@ -293,14 +304,26 @@
                     prevDecreasingSlope = slope(prevLoc, decreasingCorner),
                     prevIncreasingSlope = slope(prevLoc, increasingCorner);
 
-                if (decreasingSlope < prevDecreasingSlope &&
-                        increasingSlope > prevIncreasingSlope) {
                     // Mouse is moving from previous location towards the
                     // currently activated submenu. Delay before activating a
                     // new menu row, because user may be moving into submenu.
+
+            // both means submenus may be located on both sides: left or right
+            // vi adaption
+            if (options.submenuDirection == 'both') {
+                if ((decreasingSlope < prevDecreasingSlope && increasingSlope > prevIncreasingSlope)
+                    || (decreasingSlope > prevDecreasingSlope && increasingSlope < prevIncreasingSlope)) {
                     lastDelayLoc = loc;
                     return DELAY;
                 }
+            } else {
+                // default: submenu on one side
+                if (decreasingSlope < prevDecreasingSlope && increasingSlope > prevIncreasingSlope) {
+                    lastDelayLoc = loc;
+                    return DELAY;
+                }
+            }
+            // vi adaption end
 
                 lastDelayLoc = null;
                 return 0;
@@ -309,15 +332,16 @@
         /**
          * Hook up initial menu events
          */
+        // vi adaption
         $menu
-            .mouseleave(mouseleaveMenu)
+            .on('mouseleave', mouseleaveMenu)
             .find(options.rowSelector)
-                .mouseenter(mouseenterRow)
-                .mouseleave(mouseleaveRow)
-                .click(clickRow);
+                .on('mouseenter', mouseenterRow)
+                .on('mouseleave', mouseleaveRow)
+                .on('click', clickRow);
 
-        $(document).mousemove(mousemoveDocument);
-
+        $(document).on('mousemove', mousemoveDocument);
+        // vi adaption end
     };
 })(jQuery);
 
