@@ -76,8 +76,8 @@
  *          submenuDirection: "right"
  *      });
  *
- * https://github.com/kamens/jQuery-menu-aim
-*/
+ */
+/*! jQuery-menu-aim | Copyright 2013 Ben Kamens | Released under the MIT license | http://www.opensource.org/licenses/mit-license.php */
 (function($) {
 
     $.fn.menuAim = function(opts) {
