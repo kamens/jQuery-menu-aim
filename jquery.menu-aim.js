@@ -53,6 +53,13 @@
  *          // Function to call when mouse exits a menu row.
  *          exit: function() {},
  *
+ *          // Function to call when mouse exits the entire menu. If this returns
+ *          // true, the current row's deactivation event and callback function
+ *          // will be fired. Otherwise, if this isn't supplied or it returns
+ *          // false, the currently activated row will stay activated when the
+ *          // mouse leaves the menu entirely.
+ *          exitMenu: function() {},
+ *
  *          // Selector for identifying which elements in the menu are rows
  *          // that can trigger the above events. Defaults to "> li".
  *          rowSelector: "> li",
@@ -62,16 +69,33 @@
  *          // this selector. Defaults to "*" (all elements).
  *          submenuSelector: "*",
  *
- *          // Direction the submenu opens relative to the main menu. Can be
- *          // left, right, above, or below. Defaults to "right".
+ *          // Direction the submenu opens relative to the main menu. This
+ *          // controls which direction is "forgiving" as the user moves their
+ *          // cursor from the main menu into the submenu. Can be one of "right",
+ *          // "left", "above", or "below". Defaults to "right".
  *          submenuDirection: "right"
  *      });
  *
- * https://github.com/kamens/jQuery-menu-aim
-*/
+ * Activation can be triggered from your own code via the API:
+ *
+ *      $('#menu').menuAim('activate', elem);
+ *      $('#menu').menuAim('deactivateMenu');
+ *
+ */
+/*! jQuery-menu-aim | Copyright 2013 Ben Kamens | Released under the MIT license | http://www.opensource.org/licenses/mit-license.php */
 (function($) {
 
     $.fn.menuAim = function(opts) {
+        var apiAction, apiArgs;
+        if (typeof arguments[0] === 'string') {
+            apiAction = arguments[0];
+            apiArgs = Array.prototype.slice.apply(arguments, 1);
+            this.each(function(){
+                $(this).data('menuAim')[apiAction].apply(null, apiArgs);
+            });
+            return this;
+        }
+
         // Initialize menu-aim for all elements in jQuery collection
         this.each(function() {
             init.call(this, opts);
@@ -318,6 +342,23 @@
 
         $(document).mousemove(mousemoveDocument);
 
+
+        // API for external activation triggers
+        $menu.data('menuAim', {
+            activate: function(elem) {
+                if (!$menu.find(options.rowSelector).filter(elem).length) return;
+                activate(elem);
+            },
+            deactivateMenu: function() {
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                }
+                if (activeRow) {
+                    options.deactivate(activeRow);
+                }
+                activeRow = null;
+            }
+        });
     };
 })(jQuery);
 
