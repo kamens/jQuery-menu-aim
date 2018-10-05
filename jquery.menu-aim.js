@@ -67,11 +67,26 @@
  *          submenuDirection: "right"
  *      });
  *
+ * Activation can be triggered from your own code via the API:
+ *
+ *      $('#menu').menuAim('activate', elem);
+ *      $('#menu').menuAim('deactivateMenu');
+ *
  * https://github.com/kamens/jQuery-menu-aim
 */
 (function($) {
 
     $.fn.menuAim = function(opts) {
+        var apiAction, apiArgs;
+        if (typeof arguments[0] === 'string') {
+            apiAction = arguments[0];
+            apiArgs = Array.prototype.slice.apply(arguments, [1]);
+            this.each(function(){
+                $(this).data('menuAim')[apiAction].apply(null, apiArgs);
+            });
+            return this;
+        }
+
         // Initialize menu-aim for all elements in jQuery collection
         this.each(function() {
             init.call(this, opts);
@@ -318,6 +333,23 @@
 
         $(document).mousemove(mousemoveDocument);
 
+
+        // API for external activation triggers
+        $menu.data('menuAim', {
+            activate: function(elem) {
+                if (!$menu.find(options.rowSelector).filter(elem).length) return;
+                activate(elem);
+            },
+            deactivateMenu: function() {
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                }
+                if (activeRow) {
+                    options.deactivate(activeRow);
+                }
+                activeRow = null;
+            }
+        });
     };
 })(jQuery);
 
