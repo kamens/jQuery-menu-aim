@@ -142,6 +142,7 @@
 
                 options.enter(this);
                 possiblyActivate(this);
+                options.activate(activeRow);
             },
             mouseleaveRow = function() {
                 options.exit(this);
